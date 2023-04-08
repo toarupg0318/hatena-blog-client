@@ -1,0 +1,29 @@
+{
+    "name": "toarupg0318/hatena-blog-client",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Toarupg0318\\HatenaBlogClient\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "toarupi0318",
+            "email": "toarupg0318@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.5"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10",
+        "pestphp/pest": "^2.4"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
