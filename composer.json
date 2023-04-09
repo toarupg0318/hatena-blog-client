@@ -19,7 +19,8 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^1.10",
-        "pestphp/pest": "^2.4"
+        "pestphp/pest": "^2.4",
+        "symfony/var-dumper": "^6.2"
     },
     "config": {
         "allow-plugins": {
