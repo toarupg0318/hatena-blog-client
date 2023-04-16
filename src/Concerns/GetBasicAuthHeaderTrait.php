@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\HatenaBlogClient\Concerns;
+namespace Toarupg0318\HatenaBlogClient\Concerns;
 
 trait GetBasicAuthHeaderTrait
 {
     /**
-     * todo: no guzzle, test
+     * todo: no guzzle, test.
      * @param string $hatenaId
      * @param string $apiKey
      * @return array
