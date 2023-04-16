@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\HatenaClient;
+namespace Toarupg0318\HatenaBlogClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
-use Toarupg0318\HatenaBlogClient\Concerns\DOM\HatenaDOMDocument;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientInterface;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMDocument;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
 
-class HatenaClient
-    //implements HatenaClientInterface
+class HatenaClient implements HatenaClientInterface
 {
     private Client|null $client;
+
+    private static int|null $memoizedValue = null;
 
     /**
      * @param string $hatenaId
@@ -24,31 +27,70 @@ class HatenaClient
         private readonly string $apiKey,
         private readonly string $auth = 'basic'
     ) {
-        if (! isset($this->client)) {
+        if (! isset($this->client) || empty(self::$memoizedValue)) {
             $this->client = new Client();
         }
-
-        // todo: crc32でnewするか判定
-
-        return $this;
     }
 
     /**
      * @param string $hatenaId
      * @param string $apiKey
      * @param 'basic'|'wsse'|'oauth' $auth
-     * @return self
+     * @return HatenaClientInterface
      */
     public static function getInstance(
         string $hatenaId,
         string $apiKey,
         string $auth = 'basic'
-    ): self {
-        return new self(
-            $hatenaId,
-            $apiKey,
-            $auth
-        );
+    ): HatenaClientInterface {
+        static $hatenaClient;
+
+        if (empty($hatenaClient) || empty(self::$memoizedValue)) {
+            self::$memoizedValue = self::calcMemo($hatenaId, $apiKey, $auth);
+            $hatenaClient = new self(
+                $hatenaId,
+                $apiKey,
+                $auth
+            );
+            return $hatenaClient;
+        }
+
+        $digest = crc32(json_encode([$hatenaId, $apiKey, $auth]));
+        if ($digest === self::$memoizedValue || ! $hatenaClient instanceof HatenaClientInterface) {
+            return $hatenaClient;
+        }
+
+//        return new self(
+//            $hatenaId,
+//            $apiKey,
+//            $auth
+//        );
+
+        // todo:
+        throw new \Exception();
+    }
+
+    /**
+     * @param string|null $page
+     * @return ResponseInterface
+     * @throws GuzzleException
+     */
+    public function getList(string|null $page = null): ResponseInterface
+    {
+        if (! isset($this->client)) {
+            throw new \Exception(); // todo:
+        }
+
+        $header = match ($this->auth) {
+            'basic' => self::getBasicHeader($this->hatenaId, $this->apiKey),    // todo: trait
+            'wsse' => self::getWSSEHeader($this->hatenaId, $this->apiKey),      // todo: trait
+        };
+
+        return $this->client
+            ->get(
+                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
+                options: $header
+            );
     }
 
     /**
@@ -119,13 +161,30 @@ class HatenaClient
     }
 
     /**
-     * @param string|HatenaDOMDocument $document
+     *
+     *
+     * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
+     * @param string $title
+     * @param self::CONTENT_TYPE_* $contentType
+     * @param bool $draft
+     * @param string|null $updated
+     * @param string|null $customUrl
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function post(string|HatenaDOMDocument $document): ResponseInterface
-    {
-        $postValue = ($document instanceof HatenaDOMDocument) ? $document->__toString() : $document;
+    public function post(
+        string|HatenaDOMDocument $content,
+        string                   $title,
+        string                   $contentType,
+        bool                     $draft,
+        string|null              $updated,
+        string|null              $customUrl
+    ): ResponseInterface {
+        if (! isset($this->client)) {
+            throw new \Exception(); // todo: make ex
+        }
+
+        $postValue = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
 
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -136,7 +195,7 @@ class HatenaClient
   <content type="text/plain">
 *大見出し記法
 **中見出し記法
-$document
+$content
   </content>
   <updated>2008-01-01T00:00:00</updated>
   <category term="Scala" />
@@ -160,8 +219,25 @@ XML;
         );
 
         return $this->client->post(
-            uri: 'https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry',
+            uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
             options: $postData
         );
+    }
+
+    /**
+     * @param string $hatenaId
+     * @param string $apiKey
+     * @param string $auth
+     * @return int
+     * @throws \Exception
+     */
+    private static function calcMemo(string $hatenaId, string $apiKey, string $auth): int
+    {
+        $encodedValue = json_encode([$hatenaId, $apiKey, $auth]);
+        if (! is_string($encodedValue)) {
+            throw new \Exception(); // todo: HatenaClientUnexpectedException
+        }
+
+        return crc32($encodedValue);
     }
 }

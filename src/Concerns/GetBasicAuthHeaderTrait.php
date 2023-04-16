@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\HatenaClient;
+namespace Toarupg0318\HatenaBlogClient\HatenaBlogClient\Concerns;
 
 trait GetBasicAuthHeaderTrait
 {

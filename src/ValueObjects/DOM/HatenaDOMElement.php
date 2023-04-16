@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\Concerns\DOM;
+namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
 use Stringable;
 

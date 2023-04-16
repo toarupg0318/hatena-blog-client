@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\Concerns\DOM;
+namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
 final class HatenaTableDOMElement extends HatenaDOMElement
 {
@@ -15,6 +15,7 @@ final class HatenaTableDOMElement extends HatenaDOMElement
     public function __construct(
         private readonly array $table
     ) {
+        // todo: ヘッダー列数とラインの列数が等しくなかったらthrow ex
     }
 
     // todo: table操作アクションs

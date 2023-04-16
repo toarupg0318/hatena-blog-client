@@ -2,20 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\Concerns\DOM;
+namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
-final class HatenaLiDomElement extends HatenaDOMElement
+final class HatenaLiDOMElement extends HatenaDOMElement
 {
+    public const SYNTAX_MINUS = '-';
+    public const SYNTAX_PLUS = '+';
+
     /**
      * @param array{
      *     header: string|null,
      *     lines: array<int<0, max>, string|null>
      * } $table
-     * @param 'ol'|'ul' $tag
+     * @param self::SYNTAX_* $tag
      */
     public function __construct(
         private readonly array $table,
-        private readonly string $tag = 'ol'
+        private readonly string $tag = '-'
     ) {
     }
 

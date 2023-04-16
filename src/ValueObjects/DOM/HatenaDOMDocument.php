@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\Concerns\DOM;
+namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
 use Generator;
 use IteratorAggregate;
 use Stringable;
 
 /**
+ * todo: 脚注記法
  * @implements IteratorAggregate<HatenaDOMElement>
  */
 class HatenaDOMDocument implements IteratorAggregate, Stringable

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\Concerns\DOM;
+namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
-final class HatenaH5DomElement extends HatenaDOMElement
+final class HatenaH4DOMElement extends HatenaDOMElement
 {
     public function __construct(
         private readonly string $value
@@ -16,6 +16,6 @@ final class HatenaH5DomElement extends HatenaDOMElement
      */
     public function __toString(): string
     {
-        return '***' . $this->value . PHP_EOL;
+        return '**' . $this->value . PHP_EOL;
     }
 }

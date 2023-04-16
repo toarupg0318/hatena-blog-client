@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Toarupg0318\HatenaBlogClient\Concerns\DOM;
+namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
-final class HatenaDtDomElement extends HatenaDOMElement
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
+
+final class HatenaDtDOMElement extends HatenaDOMElement
 {
     public function __construct(
         private readonly string|null $title,
