@@ -7,18 +7,17 @@ namespace Toarupg0318\HatenaBlogClient\Concerns;
 trait GetBasicAuthHeaderTrait
 {
     /**
-     * todo: no guzzle, test.
      * @param string $hatenaId
      * @param string $apiKey
-     * @return array
+     * @return array{headers: array<string, string>}
      */
-    public function getBasicAuthHeader(string $hatenaId, string $apiKey): array
+    private function getBasicAuthHeader(string $hatenaId, string $apiKey): array
     {
         return [
             'headers' => [
                 'Content-Type' => 'application/atomsvc+xml; charset=utf-8',
+                'Authorization' => 'Basic ' . base64_encode($hatenaId . ':' . $apiKey),
             ],
-            'auth' => [$hatenaId, $apiKey]
         ];
     }
 }
