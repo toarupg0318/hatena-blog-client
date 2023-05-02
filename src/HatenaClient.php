@@ -11,7 +11,10 @@ use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientInterface;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMDocument;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
 
-class HatenaClient implements HatenaClientInterface
+/**
+ * @implements HatenaClientDumper<HatenaClientInterface>
+ */
+class HatenaClient implements HatenaClientInterface, HatenaClientDumper
 {
     private Client|null $client;
 
@@ -239,5 +242,22 @@ XML;
         }
 
         return crc32($encodedValue);
+    }
+
+    /**
+     * @return HatenaClientInterface
+     */
+    public function dump(): HatenaClientInterface
+    {
+        dump($this);
+        return $this;
+    }
+
+    /**
+     * @return never
+     */
+    public function dd(): never
+    {
+        dd($this);
     }
 }
