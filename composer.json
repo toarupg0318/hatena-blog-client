@@ -20,7 +20,8 @@
     "require-dev": {
         "phpstan/phpstan": "^1.10",
         "pestphp/pest": "^2.4",
-        "symfony/var-dumper": "^6.2"
+        "symfony/var-dumper": "^6.2",
+        "vlucas/phpdotenv": "^5.5"
     },
     "config": {
         "allow-plugins": {
