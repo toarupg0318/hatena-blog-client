@@ -164,67 +164,89 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     }
 
     /**
-     *
+     * Post blog entry.
      *
      * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
-     * @param string $title
-     * @param self::CONTENT_TYPE_* $contentType
+     * @param string|null $title
+     * @param HatenaClientInterface::CONTENT_TYPE_* $contentType
      * @param bool $draft
      * @param string|null $updated
      * @param string|null $customUrl
-     * @return ResponseInterface
-     * @throws GuzzleException
+     * @param string[] $categories
+     * @return ResponseInterface&HatenaPostResponseInterface
+     *
+     * @throws HatenaUnexpectedException
+     * @throws HatenaHttpException
      */
     public function post(
         string|HatenaDOMDocument $content,
-        string                   $title,
-        string                   $contentType,
-        bool                     $draft,
-        string|null              $updated,
-        string|null              $customUrl
-    ): ResponseInterface {
+        string|null $title = null,
+        string $contentType = 'text/plain',
+        bool $draft = true,
+        string|null $updated = null,
+        string|null $customUrl = null,
+        array $categories = []
+    ): ResponseInterface&HatenaPostResponseInterface {
         if (! isset($this->client)) {
-            throw new \Exception(); // todo: make ex
+            throw new HatenaUnexpectedException();
         }
 
-        $postValue = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
+        $contentInXML = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
+        $draftYesOrNo = ($draft) ? 'yes' : 'no';
+        $categoriesImXml = implode(
+            separator: '',
+            array: array_map(
+                callback: function (string $categoryValue) {
+                    return "<category term=\"{$categoryValue}\" />";
+                },
+                array: $categories
+            )
+        );
 
-        $xml = <<<XML
+        $bodyToPost = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
 <entry xmlns="http://www.w3.org/2005/Atom"
        xmlns:app="http://www.w3.org/2007/app">
-  <title>wsse 認証</title>
+  <title>{$title}</title>
   <author><name>name</name></author>
-  <content type="text/plain">
-*大見出し記法
-**中見出し記法
-$content
+  <content type="$contentType">
+$contentInXML
   </content>
-  <updated>2008-01-01T00:00:00</updated>
-  <category term="Scala" />
+  <updated>{$updated}</updated>
+  $categoriesImXml
   <app:control>
-    <app:draft>{yes | no}</app:draft>
+    <app:draft>{$draftYesOrNo}</app:draft>
   </app:control>
-  <hatenablog:custom-url xmlns:hatenablog="http://www.hatena.ne.jp/info/xmlns#hatenablog">2008-happy-new-year</hatenablog:custom-url>
+  <hatenablog:custom-url xmlns:hatenablog="http://www.hatena.ne.jp/info/xmlns#hatenablog">
+    {$customUrl}  
+  </hatenablog:custom-url>
 </entry>
 XML;
 
         $header = match ($this->auth) {
-            'basic' => self::getBasicHeader($this->hatenaId, $this->apiKey),    // todo: trait
-            'wsse' => self::getWSSEHeader($this->hatenaId, $this->apiKey),      // todo: trait
+            'basic' => self::getBasicAuthHeader($this->hatenaId, $this->apiKey),
+            'wsse' => self::getWSSEAuthHeader($this->hatenaId, $this->apiKey),
         };
 
         $postData = array_merge(
             $header,
             [
-                'body' => $xml,
+                'body' => $bodyToPost,
             ]
         );
 
-        return $this->client->post(
-            uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
-            options: $postData
-        );
+        try {
+            $response = $this->client->post(
+                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
+                options: $postData
+            );
+            return new HatenaHatenaPostResponse($response);
+        } catch (GuzzleException $guzzleException) {
+            throw new HatenaHttpException(
+                code: $guzzleException->getCode(),
+                previous: $guzzleException
+            );
+        }
     }
 
     /**
