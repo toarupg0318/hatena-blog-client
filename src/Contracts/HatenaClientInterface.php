@@ -17,10 +17,12 @@ interface HatenaClientInterface
     public const CONTENT_TYPE_HATENA_SYNTAX = 'text/x-hatena-syntax';
 
     /**
+     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom/#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E4%B8%80%E8%A6%A7%E5%8F%96%E5%BE%97
+     *
      * @param string|null $page
-     * @return ResponseInterface
+     * @return ResponseInterface&HatenaGetListResponseInterface
      */
-    public function getList(string|null $page = null): ResponseInterface;
+    public function getList(string|null $page = null): ResponseInterface&HatenaGetListResponseInterface;
 
     // todo: ブログエントリの取得
 

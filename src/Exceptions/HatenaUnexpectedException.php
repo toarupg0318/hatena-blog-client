@@ -11,9 +11,10 @@ final class HatenaUnexpectedException extends HatenaException
     const MESSAGE = 'Something unexpected has occurred in Hatena api process.';
 
     public function __construct(
+        string $message = self::MESSAGE,
         int $code = 0,
         null|Throwable $previous = null
     ) {
-        parent::__construct(self::MESSAGE, $code, $previous);
+        parent::__construct($message, $code, $previous);
     }
 }

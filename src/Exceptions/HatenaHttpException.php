@@ -12,9 +12,10 @@ final class HatenaHttpException extends Exception
     const MESSAGE = 'Http connection to Hatena has failed.';
 
     public function __construct(
+        string $message = self::MESSAGE,
         int $code = 0,
         null|Throwable $previous = null
     ) {
-        parent::__construct(self::MESSAGE, $code, $previous);
+        parent::__construct($message, $code, $previous);
     }
 }

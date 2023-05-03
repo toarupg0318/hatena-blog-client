@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Toarupg0318\HatenaBlogClient;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
+use Toarupg0318\HatenaBlogClient\Concerns\GetBasicAuthHeaderTrait;
+use Toarupg0318\HatenaBlogClient\Concerns\GetWSSEAuthHeaderTrait;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientDumper;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMDocument;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
 
@@ -16,6 +24,10 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
  */
 class HatenaClient implements HatenaClientInterface, HatenaClientDumper
 {
+    use GetBasicAuthHeaderTrait;
+    use GetWSSEAuthHeaderTrait;
+
+
     private Client|null $client;
 
     private static int|null $memoizedValue = null;
@@ -23,7 +35,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     /**
      * @param string $hatenaId
      * @param string $apiKey
-     * @param 'basic'|'wsse'|'oauth' $auth
+     * @param 'basic'|'wsse' $auth
      */
     private function __construct(
         private readonly string $hatenaId,
@@ -38,14 +50,16 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     /**
      * @param string $hatenaId
      * @param string $apiKey
-     * @param 'basic'|'wsse'|'oauth' $auth
-     * @return HatenaClientInterface
+     * @param 'basic'|'wsse' $auth
+     * @return self
+     *
+     * @throws Exception
      */
     public static function getInstance(
         string $hatenaId,
         string $apiKey,
         string $auth = 'basic'
-    ): HatenaClientInterface {
+    ): self {
         static $hatenaClient;
 
         if (empty($hatenaClient) || empty(self::$memoizedValue)) {
@@ -58,109 +72,60 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
             return $hatenaClient;
         }
 
-        $digest = crc32(json_encode([$hatenaId, $apiKey, $auth]));
-        if ($digest === self::$memoizedValue || ! $hatenaClient instanceof HatenaClientInterface) {
+        $encodedValue = json_encode([$hatenaId, $apiKey, $auth]);
+        if ($encodedValue === false) {
+            throw new HatenaUnexpectedException();
+        }
+
+        $checkSum = crc32($encodedValue);
+        if ($checkSum === self::$memoizedValue) {
             return $hatenaClient;
         }
 
-//        return new self(
-//            $hatenaId,
-//            $apiKey,
-//            $auth
-//        );
-
-        // todo:
-        throw new \Exception();
+        throw new HatenaUnexpectedException();
     }
 
     /**
-     * @param string|null $page
-     * @return ResponseInterface
-     * @throws GuzzleException
+     * Fetch blog entries.
+     *
+     * @param string|null $page 'https://blog.hatena.ne.jp/hoge0318/fuga0318.hatenablog.com/atom/entry?page=1780929531' or '1780929531'
+     * @return ResponseInterface&HatenaGetListResponseInterface
+     *
+     * @throws HatenaHttpException
+     * @throws HatenaUnexpectedException
+     *
+     * @example
+     *  $client->getList('https://blog.hatena.ne.jp/hoge0318/fuga0318.hatenablog.com/atom/entry?page=1780929531');
+     * @example
+     *  $client->getList('1780929531');
+     * @example
+     *  $client->getList();
      */
-    public function getList(string|null $page = null): ResponseInterface
+    public function getList(string|null $page = null): ResponseInterface&HatenaGetListResponseInterface
     {
         if (! isset($this->client)) {
-            throw new \Exception(); // todo:
+            throw new HatenaUnexpectedException();
         }
 
         $header = match ($this->auth) {
-            'basic' => self::getBasicHeader($this->hatenaId, $this->apiKey),    // todo: trait
-            'wsse' => self::getWSSEHeader($this->hatenaId, $this->apiKey),      // todo: trait
+            'basic' => self::getBasicAuthHeader($this->hatenaId, $this->apiKey),
+            'wsse' => self::getWSSEAuthHeader($this->hatenaId, $this->apiKey),
+//            'oauth' => throw new \LogicException(),
         };
 
-        return $this->client
-            ->get(
-                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
-                options: $header
+        try {
+            $response = $this->client
+                ->get(
+                    uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
+                    options: $header
+                );
+            return new HatenaHatenaGetListResponse($response);
+        } catch (GuzzleException $guzzleException) {
+            throw new HatenaHttpException(
+                code: $guzzleException->getCode(),
+                previous: $guzzleException
             );
-    }
-
-    /**
-     * @param string $hatenaId
-     * @param string $apiKey
-     * @return array{
-     *     header: array<string, string>,
-     *     auth: array{0: string, 1: string}
-     * }
-     */
-    private function getBasicHeader(
-        string $hatenaId,
-        string $apiKey
-    ): array {
-        return [
-            'headers' => [
-                'Content-Type' => 'application/atomsvc+xml; charset=utf-8',
-            ],
-            'auth' => [$hatenaId, $apiKey]
-        ];
-    }
-
-    /**
-     * todo: trait
-     * @param string $hatenaId
-     * @param string $apiKey
-     * @return array{
-     *     headers: array{
-     *         Accept: string,
-     *         X-WSSE: string
-     *     }
-     * }
-     */
-    public function getWSSEHeader(
-        string $hatenaId,
-        string $apiKey
-    ): array {
-        $nonce = hash(
-            algo: 'sha1',
-            data: hash(
-                algo: 'sha1',
-                data: strval(time()) . uniqid(strval(mt_rand()), true) . rand() . intval(getmypid())
-            )
-        );
-        $now = date('Y-m-d\TH:i:s\Z');
-        $digest = base64_encode(
-            string: hash(
-                algo: 'sha1',
-                data: $nonce . $now . $apiKey,
-                binary: true
-            )
-        );
-
-        $credentials = sprintf(
-            'UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s',
-            $hatenaId,
-            $digest,
-            base64_encode($nonce),
-            $now
-        );
-
-        return [
-            'headers' => [
-                'Accept' => 'application/x.atom+xml, application/xml, text/xml, */*',
-                'X-WSSE' => $credentials,
-            ]
-        ];
+        }
     }
 
     /**
@@ -254,13 +219,13 @@ XML;
      * @param string $apiKey
      * @param string $auth
      * @return int
-     * @throws \Exception
+     * @throws HatenaUnexpectedException
      */
     private static function calcMemo(string $hatenaId, string $apiKey, string $auth): int
     {
         $encodedValue = json_encode([$hatenaId, $apiKey, $auth]);
         if (! is_string($encodedValue)) {
-            throw new \Exception(); // todo: HatenaClientUnexpectedException
+            throw new HatenaUnexpectedException();
         }
 
         return crc32($encodedValue);

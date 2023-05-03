@@ -11,9 +11,10 @@ final class HatenaInvalidPageUrlException extends HatenaException
     const MESSAGE = 'Passed page URL param is invalid.';
 
     public function __construct(
+        string $message = self::MESSAGE,
         int $code = 0,
         null|Throwable $previous = null
     ) {
-        parent::__construct(self::MESSAGE, $code, $previous);
+        parent::__construct($message, $code, $previous);
     }
 }
