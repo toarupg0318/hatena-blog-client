@@ -1,5 +1,6 @@
 {
     "name": "toarupg0318/hatena-blog-client",
+    "description": "A Hatena blog client package.",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -10,7 +11,9 @@
     "authors": [
         {
             "name": "toarupi0318",
-            "email": "toarupg0318@gmail.com"
+            "email": "toarupg0318@gmail.com",
+            "homepage": "https://github.com/toarupg0318/hatena-blog-client",
+            "role": "developer"
         }
     ],
     "require": {
