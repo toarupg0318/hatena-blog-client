@@ -13,6 +13,7 @@ use Toarupg0318\HatenaBlogClient\Concerns\GetWSSEAuthHeaderTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientDumper;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetPostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
@@ -131,11 +132,22 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     /**
      * Fetch a blog entry posted by entry id.
      *
-     * @param string $entryId
-     * @return mixed
+     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom/#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E5%8F%96%E5%BE%97
+     *
+     * @param string $entryId it comes from getList.entryId
+     * @return ResponseInterface&HatenaGetPostByEntryIdResponseInterface
+     *
+     * @throws HatenaUnexpectedException
+     * @throws HatenaHttpException
+     * @throws HatenaInvalidArgumentException
      */
-    public function getPostByEntryId(string $entryId): mixed
-    {
+    public function getPostByEntryId(
+        string $entryId
+    ): ResponseInterface&HatenaGetPostByEntryIdResponseInterface {
+        if (empty($entryId)) {
+            throw new HatenaInvalidArgumentException('Entry id is empty.');
+        }
+
         if (! isset($this->client)) {
             throw new HatenaUnexpectedException();
         }
@@ -152,9 +164,10 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
                     uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry/{$entryId}",
                     options: $header
                 );
-            return new HatenaGetListResponse($response);
+            return new HatenaGetPostByEntryIdResponse($response);
         } catch (GuzzleException $guzzleException) {
             throw new HatenaHttpException(
+                message: $guzzleException->getMessage(),
                 code: $guzzleException->getCode(),
                 previous: $guzzleException
             );

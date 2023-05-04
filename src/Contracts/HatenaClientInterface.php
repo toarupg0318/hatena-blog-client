@@ -26,9 +26,11 @@ interface HatenaClientInterface
 
     /**
      * @param string $entryId
-     * @return mixed
+     * @return ResponseInterface&HatenaGetPostByEntryIdResponseInterface
      */
-    public function getPostByEntryId(string $entryId): mixed;
+    public function getPostByEntryId(
+        string $entryId
+    ): ResponseInterface&HatenaGetPostByEntryIdResponseInterface;
 
     // todo: ブログエントリの編集
     // todo: ブログエントリの削除
