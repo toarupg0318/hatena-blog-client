@@ -22,3 +22,6 @@ jobs:
 
       - name: Tests
         run: ./vendor/bin/pest
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse
