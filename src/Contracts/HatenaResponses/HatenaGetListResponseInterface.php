@@ -20,4 +20,20 @@ interface HatenaGetListResponseInterface
      * @return string|null
      */
     public function getNextPageUrl(): string|null;
+
+    /**
+     * Extract human-like structure from Get List response.
+     *
+     * @return array{
+     *     entryId?: string,
+     *     editLinkUrl?: string|null,
+     *     authorName?: string|null,
+     *     title?: string|null,
+     *     updated?: string|null,
+     *     published?: string|null,
+     *     summary?: string|null,
+     *     categories?: string[]
+     * }[]
+     */
+    public function getParsedEntries(): array;
 }
