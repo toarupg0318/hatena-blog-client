@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Toarupg0318\HatenaBlogClient\Contracts;
 
 use Psr\Http\Message\ResponseInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaDeletePostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetPostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMDocument;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
@@ -33,7 +35,14 @@ interface HatenaClientInterface
     ): ResponseInterface&HatenaGetPostByEntryIdResponseInterface;
 
     // todo: ブログエントリの編集
-    // todo: ブログエントリの削除
+
+    /**
+     * @param string $entryId
+     * @return ResponseInterface&HatenaDeletePostByEntryIdResponseInterface
+     */
+    public function deletePostByEntryId(
+        string $entryId
+    ): ResponseInterface&HatenaDeletePostByEntryIdResponseInterface;
 
     /**
      * Post blog entry.

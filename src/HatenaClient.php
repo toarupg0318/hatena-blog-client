@@ -12,10 +12,12 @@ use Toarupg0318\HatenaBlogClient\Concerns\GetBasicAuthHeaderTrait;
 use Toarupg0318\HatenaBlogClient\Concerns\GetWSSEAuthHeaderTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientDumper;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaDeletePostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetPostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaInvalidArgumentException;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMDocument;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
@@ -252,6 +254,49 @@ XML;
                 options: $postData
             );
             return new HatenaPostResponse($response);
+        } catch (GuzzleException $guzzleException) {
+            throw new HatenaHttpException(
+                message: $guzzleException->getMessage(),
+                code: $guzzleException->getCode(),
+                previous: $guzzleException
+            );
+        }
+    }
+
+    /**
+     * Delete existing post by entry id.
+     *
+     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom/#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E5%89%8A%E9%99%A4
+     *
+     * @param string $entryId it comes from getList.entryId
+     * @return ResponseInterface&HatenaDeletePostByEntryIdResponseInterface
+     *
+     * @throws HatenaHttpException
+     * @throws HatenaUnexpectedException
+     * @throws HatenaInvalidArgumentException
+     */
+    public function deletePostByEntryId(
+        string $entryId
+    ): ResponseInterface&HatenaDeletePostByEntryIdResponseInterface {
+        if (! isset($this->client)) {
+            throw new HatenaUnexpectedException();
+        }
+
+        if (empty($entryId)) {
+            throw new HatenaInvalidArgumentException('Entry id is empty.');
+        }
+
+        $header = match ($this->auth) {
+            'basic' => self::getBasicAuthHeader($this->hatenaId, $this->apiKey),
+            'wsse' => self::getWSSEAuthHeader($this->hatenaId, $this->apiKey),
+        };
+
+        try {
+            $response = $this->client->delete(
+                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry/{$entryId}",
+                options: $header
+            );
+            return new HatenaDeletePostByEntryIdResponse($response);
         } catch (GuzzleException $guzzleException) {
             throw new HatenaHttpException(
                 message: $guzzleException->getMessage(),
