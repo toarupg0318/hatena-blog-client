@@ -10,6 +10,18 @@ use Toarupg0318\HatenaBlogClient\Concerns\RecursiveSearchWithKeyValueTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
 
+/**
+ * @phpstan-type ParsedEntries = array{
+ *     entryId?: string,
+ *     editLinkUrl?: string|null,
+ *     authorName?: string|null,
+ *     title?: string|null,
+ *     updated?: string|null,
+ *     published?: string|null,
+ *     summary?: string|null,
+ *     categories?: string[]
+ * }
+ */
 final class HatenaGetListResponse extends Response implements ResponseInterface, HatenaGetListResponseInterface
 {
     use RecursiveSearchWithKeyValueTrait;
@@ -85,5 +97,94 @@ final class HatenaGetListResponse extends Response implements ResponseInterface,
             searchValue: 'next',
             siblingKey: 'href',
         );
+    }
+
+    /**
+     * Extract human-like structure from Get List response.
+     *
+     * @return ParsedEntries[]
+     */
+    public function getParsedEntries(): array
+    {
+        return self::extractEntriesFromGetListResponse(self::$parsedData);
+    }
+
+    /**
+     * @param array<string, mixed> $parsedData
+     * @return ParsedEntries[]
+     */
+    private function extractEntriesFromGetListResponse(array $parsedData): array
+    {
+        $entries = $parsedData['entry'] ?? [];
+        if (! is_array($entries) || count($entries) < 1) {
+            return [];
+        }
+
+        return array_map(function (array $entry) {
+            $return = [];
+
+            // extract entry id
+            // https://blog.hatena.ne.jp/hoge001/fuga002.hatenablog.com/atom/entry/4207575166455635809
+            // to
+            // 4207575166455635809
+            $editUri = $this->recursiveSearchWithKeyValue($entry, 'rel', 'edit', 'href');
+            if (is_string($editUri)) {
+                $return['editLinkUrl'] = $editUri;
+                preg_match('/^(.*)(entry\/)(.*)$/u', $editUri, $matches);
+                $entryId = $matches[3] ?? null;
+                if (! empty($entryId) && is_string($entryId)) {
+                    $return['entryId'] = $matches[3];
+                }
+            }
+
+            $authorName = $entry['author']['name'];
+            if ($authorName !== null) {
+                $return['authorName'] = $authorName;
+            }
+
+            $title = $entry['title'] ?? null;
+            if ($title !== null) {
+                $return['title'] = $title;
+            }
+
+            $updated = $entry['updated'] ?? null;
+            if ($updated !== null) {
+                $return['updated'] = $updated;
+            }
+
+            $published = $entry['published'] ?? null;
+            if ($published !== null) {
+                $return['published'] = $published;
+            }
+
+            $summary = $entry['summary'] ?? null;
+            if ($summary !== null) {
+                $return['summary'] = $summary;
+            }
+
+            $rawCategories = $entry['category'] ?? [];
+            if (is_array($rawCategories)) {
+                $categories = [];
+
+                $rawCategoryCount = count($rawCategories);
+                if ($rawCategoryCount === 0) {
+//                    return [];
+                } elseif ($rawCategoryCount === 1) {
+                    if ($rawCategories['@attributes']['term'] ?? null) {
+                        $categories[] = $rawCategories['@attributes']['term'];
+                    }
+                } else {
+                    foreach ($rawCategories as $rawCategory) {
+                        if ($rawCategory['@attributes']['term'] ?? null) {
+                            $categories[] = $rawCategory['@attributes']['term'];
+                        }
+                    }
+                }
+
+                $return['categories'] = $categories;
+            }
+
+            return $return;
+        }, $entries);
     }
 }
