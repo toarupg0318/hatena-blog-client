@@ -119,7 +119,40 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
                     uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
                     options: $header
                 );
-            return new HatenaHatenaGetListResponse($response);
+            return new HatenaGetListResponse($response);
+        } catch (GuzzleException $guzzleException) {
+            throw new HatenaHttpException(
+                code: $guzzleException->getCode(),
+                previous: $guzzleException
+            );
+        }
+    }
+
+    /**
+     * Fetch a blog entry posted by entry id.
+     *
+     * @param string $entryId
+     * @return mixed
+     */
+    public function getPostByEntryId(string $entryId): mixed
+    {
+        if (! isset($this->client)) {
+            throw new HatenaUnexpectedException();
+        }
+
+        $header = match ($this->auth) {
+            'basic' => self::getBasicAuthHeader($this->hatenaId, $this->apiKey),
+            'wsse' => self::getWSSEAuthHeader($this->hatenaId, $this->apiKey),
+//            'oauth' => throw new \LogicException(),
+        };
+
+        try {
+            $response = $this->client
+                ->get(
+                    uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry/{$entryId}",
+                    options: $header
+                );
+            return new HatenaGetListResponse($response);
         } catch (GuzzleException $guzzleException) {
             throw new HatenaHttpException(
                 code: $guzzleException->getCode(),
@@ -205,9 +238,10 @@ XML;
                 uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
                 options: $postData
             );
-            return new HatenaHatenaPostResponse($response);
+            return new HatenaPostResponse($response);
         } catch (GuzzleException $guzzleException) {
             throw new HatenaHttpException(
+                message: $guzzleException->getMessage(),
                 code: $guzzleException->getCode(),
                 previous: $guzzleException
             );
