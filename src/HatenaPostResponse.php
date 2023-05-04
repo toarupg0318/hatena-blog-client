@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
 
-final class HatenaHatenaPostResponse extends Response implements ResponseInterface, HatenaPostResponseInterface
+final class HatenaPostResponse extends Response implements ResponseInterface, HatenaPostResponseInterface
 {
     /** @var array<string, mixed> $parsedData */
     private static array $parsedData;

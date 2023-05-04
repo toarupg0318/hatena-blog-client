@@ -6,13 +6,13 @@ namespace Toarupg0318\HatenaBlogClient;
 
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
-use Toarupg0318\HatenaBlogClient\Concerns\HatenaArrayWalkRecursiveTrait;
+use Toarupg0318\HatenaBlogClient\Concerns\RecursiveSearchWithKeyValueTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
 
-final class HatenaHatenaGetListResponse extends Response implements ResponseInterface, HatenaGetListResponseInterface
+final class HatenaGetListResponse extends Response implements ResponseInterface, HatenaGetListResponseInterface
 {
-    use HatenaArrayWalkRecursiveTrait;
+    use RecursiveSearchWithKeyValueTrait;
 
     /** @var array<string, mixed> $parsedData */
     private static array $parsedData;
@@ -64,11 +64,11 @@ final class HatenaHatenaGetListResponse extends Response implements ResponseInte
      */
     public function getFirstPageUrl(): string|null
     {
-        return $this->hatenaArrayWalkRecursive(
-            arrayToLex: self::$parsedData,
-            key1: 'rel',
-            value1: 'first',
-            key2: 'href',
+        return $this->recursiveSearchWithKeyValue(
+            arrayToSearch: self::$parsedData,
+            searchKey: 'rel',
+            searchValue: 'first',
+            siblingKey: 'href',
         );
     }
 
@@ -79,11 +79,11 @@ final class HatenaHatenaGetListResponse extends Response implements ResponseInte
      */
     public function getNextPageUrl(): string|null
     {
-        return $this->hatenaArrayWalkRecursive(
-            arrayToLex: self::$parsedData,
-            key1: 'rel',
-            value1: 'next',
-            key2: 'href',
+        return $this->recursiveSearchWithKeyValue(
+            arrayToSearch: self::$parsedData,
+            searchKey: 'rel',
+            searchValue: 'next',
+            siblingKey: 'href',
         );
     }
 }

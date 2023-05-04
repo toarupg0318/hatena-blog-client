@@ -1,13 +1,13 @@
 <?php
 
-use Toarupg0318\HatenaBlogClient\Concerns\HatenaArrayWalkRecursiveTrait;
+use Toarupg0318\HatenaBlogClient\Concerns\RecursiveSearchWithKeyValueTrait;
 
 $classUsingHatenaArrayWalkRecursiveTrait = new class() {
-    use HatenaArrayWalkRecursiveTrait;
+    use RecursiveSearchWithKeyValueTrait;
 };
 
 it(
-    'tests HatenaArrayWalkRecursiveTrait performs correctly',
+    'tests RecursiveSearchWithKeyValueTrait performs correctly',
     function () use ($classUsingHatenaArrayWalkRecursiveTrait) {
         $dataToSearch = 'https://blog.hatena.ne.jp/foo0318/bar0318.hatenablog.com/atom/entry';
         $key1 = 'rel';
@@ -29,28 +29,28 @@ it(
             ],
         ];
 
-        expect($classUsingHatenaArrayWalkRecursiveTrait->hatenaArrayWalkRecursive(
+        expect($classUsingHatenaArrayWalkRecursiveTrait->recursiveSearchWithKeyValue(
             $testData,
             $key1,
             $value1,
             $key2
         ))
             ->toBe($dataToSearch)
-            ->and($classUsingHatenaArrayWalkRecursiveTrait->hatenaArrayWalkRecursive(
+            ->and($classUsingHatenaArrayWalkRecursiveTrait->recursiveSearchWithKeyValue(
                 $testData,
                 $key1 . 'foo',
                 $value1,
                 $key2
             ))
             ->toBeNull(message: 'key1 is invalid')
-            ->and($classUsingHatenaArrayWalkRecursiveTrait->hatenaArrayWalkRecursive(
+            ->and($classUsingHatenaArrayWalkRecursiveTrait->recursiveSearchWithKeyValue(
                 $testData,
                 $key1,
                 $value1 . 'bar',
                 $key2
             ))
             ->toBeNull('value1 is invalid')
-            ->and($classUsingHatenaArrayWalkRecursiveTrait->hatenaArrayWalkRecursive(
+            ->and($classUsingHatenaArrayWalkRecursiveTrait->recursiveSearchWithKeyValue(
                 $testData,
                 $key1,
                 $value1,
