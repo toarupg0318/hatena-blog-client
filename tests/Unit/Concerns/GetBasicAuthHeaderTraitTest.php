@@ -1,6 +1,7 @@
 <?php
 
 use Toarupg0318\HatenaBlogClient\Concerns\GetBasicAuthHeaderTrait;
+use Toarupg0318\HatenaBlogClient\HatenaClient;
 
 $classUsingGetBasicAuthHeaderTrait = new class() {
     use GetBasicAuthHeaderTrait;
@@ -26,4 +27,9 @@ it('tests GetBasicAuthHeaderTrait performs correctly', function () use ($classUs
                 'Authorization' => 'Basic Zm9vMDMxODpiYXIwMzE4',
             ]
         ]);
+});
+
+it('tests only used in ' . HatenaClient::class, function () {
+    expect(GetBasicAuthHeaderTrait::class)
+        ->toOnlyBeUsedIn(HatenaClient::class);
 });

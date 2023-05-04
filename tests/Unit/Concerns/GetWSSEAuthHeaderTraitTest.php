@@ -1,6 +1,7 @@
 <?php
 
 use Toarupg0318\HatenaBlogClient\Concerns\GetWSSEAuthHeaderTrait;
+use Toarupg0318\HatenaBlogClient\HatenaClient;
 
 $classUsingGetWSSEAuthHeaderTrait = new class() {
     use GetWSSEAuthHeaderTrait;
@@ -44,4 +45,9 @@ it('tests output header.X-WSSE value is correct', function () use ($classUsingGe
     $apiKey = 'fuga0318';
     expect($classUsingGetWSSEAuthHeaderTrait->output($hatenaId, $apiKey)['headers']['X-WSSE'] ?? null)
         ->toBeString();
+});
+
+it('tests only used in ' . HatenaClient::class, function () {
+    expect(GetWSSEAuthHeaderTrait::class)
+        ->toOnlyBeUsedIn(HatenaClient::class);
 });
