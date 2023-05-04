@@ -33,6 +33,7 @@ trait GetNextOrPrevPageValueTrait
             throw new HatenaInvalidPageUrlException();
         } catch (Exception $exception) {
             throw new HatenaInvalidPageUrlException(
+                message: $exception->getMessage(),
                 code: $exception->getCode(),
                 previous: $exception
             );
