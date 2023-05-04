@@ -20,3 +20,11 @@ it('tests deletePostByEntryId() throws exception if passed entryId is empty.', f
             exceptionMessage: 'Entry id is empty.'
         );
 });
+
+it('tests edit() throws exception if passed entryId is empty.', function () use ($hatenaClient) {
+    expect(fn () => $hatenaClient->deletePostByEntryId(''))
+        ->toThrow(
+            exception: HatenaInvalidArgumentException::class,
+            exceptionMessage: 'Entry id is empty.'
+        );
+});

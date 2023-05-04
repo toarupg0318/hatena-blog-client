@@ -13,6 +13,7 @@ use Toarupg0318\HatenaBlogClient\Concerns\GetWSSEAuthHeaderTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientDumper;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaDeletePostByEntryIdResponseInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaEditPostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetPostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
@@ -29,7 +30,6 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
 {
     use GetBasicAuthHeaderTrait;
     use GetWSSEAuthHeaderTrait;
-
 
     private Client|null $client;
 
@@ -264,6 +264,102 @@ XML;
     }
 
     /**
+     * Edit existing post entry.
+     *
+     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E7%B7%A8%E9%9B%86
+     *
+     * @param string $entryId
+     * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
+     * @param string|null $title if empty, constant "■" is embedded.
+     * @param self::CONTENT_TYPE_* $contentType
+     * @param bool $draft
+     * @param string|null $updated
+     * @param string|null $customUrl
+     * @param string[] $categories
+     * @return HatenaEditPostByEntryIdResponseInterface&ResponseInterface
+     *
+     * @throws HatenaUnexpectedException
+     * @throws HatenaInvalidArgumentException
+     * @throws HatenaHttpException
+     */
+    public function edit(
+        string $entryId,
+        HatenaDOMDocument|string $content,
+        ?string $title = null,
+        string $contentType = 'text/plain',
+        bool $draft = true,
+        ?string $updated = null,
+        ?string $customUrl = null,
+        array $categories = []
+    ): ResponseInterface&HatenaEditPostByEntryIdResponseInterface {
+        if (empty($entryId)) {
+            throw new HatenaInvalidArgumentException('Entry id is empty.');
+        }
+
+        if (! isset($this->client)) {
+            throw new HatenaUnexpectedException();
+        }
+
+        $contentInXML = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
+        $draftYesOrNo = ($draft) ? 'yes' : 'no';
+        $categoriesImXml = implode(
+            separator: '',
+            array: array_map(
+                callback: function (string $categoryValue) {
+                    return "<category term=\"{$categoryValue}\" />";
+                },
+                array: $categories
+            )
+        );
+
+        $bodyToPost = <<<XML
+<?xml version="1.0" encoding="utf-8"?>
+<entry xmlns="http://www.w3.org/2005/Atom"
+       xmlns:app="http://www.w3.org/2007/app">
+  <title>{$title}</title>
+  <author><name>name</name></author>
+  <content type="$contentType">
+$contentInXML
+  </content>
+  <updated>{$updated}</updated>
+  $categoriesImXml
+  <app:control>
+    <app:draft>{$draftYesOrNo}</app:draft>
+  </app:control>
+  <hatenablog:custom-url xmlns:hatenablog="http://www.hatena.ne.jp/info/xmlns#hatenablog">
+    {$customUrl}  
+  </hatenablog:custom-url>
+</entry>
+XML;
+
+        $header = match ($this->auth) {
+            'basic' => self::getBasicAuthHeader($this->hatenaId, $this->apiKey),
+            'wsse' => self::getWSSEAuthHeader($this->hatenaId, $this->apiKey),
+        };
+
+        $postData = array_merge(
+            $header,
+            [
+                'body' => $bodyToPost,
+            ]
+        );
+
+        try {
+            $response = $this->client->put(
+                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry/{$entryId}",
+                options: $postData
+            );
+            return new HatenaEditPostByEntryIdResponse($response);
+        } catch (GuzzleException $guzzleException) {
+            throw new HatenaHttpException(
+                message: $guzzleException->getMessage(),
+                code: $guzzleException->getCode(),
+                previous: $guzzleException
+            );
+        }
+    }
+
+    /**
      * Delete existing post by entry id.
      *
      * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom/#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E5%89%8A%E9%99%A4
@@ -307,6 +403,7 @@ XML;
     }
 
     /**
+     * @internal
      * @param string $hatenaId
      * @param string $apiKey
      * @param string $auth

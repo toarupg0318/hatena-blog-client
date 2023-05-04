@@ -6,6 +6,7 @@ namespace Toarupg0318\HatenaBlogClient\Contracts;
 
 use Psr\Http\Message\ResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaDeletePostByEntryIdResponseInterface;
+use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaEditPostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetPostByEntryIdResponseInterface;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
@@ -67,4 +68,38 @@ interface HatenaClientInterface
         string|null $customUrl = null,
         array $categories = []
     ): ResponseInterface&HatenaPostResponseInterface;
+
+    /**
+     * Edit existing post entry.
+     *
+     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E7%B7%A8%E9%9B%86
+     *
+     * @param string $entryId
+     * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
+     * @param string|null $title    if empty, constant "■" is embedded.
+     * @param self::CONTENT_TYPE_* $contentType
+     * @param bool $draft
+     * @param string|null $updated
+     * @param string|null $customUrl
+     * @param string[] $categories
+     * @return HatenaEditPostByEntryIdResponseInterface&ResponseInterface
+     */
+    public function edit(
+        string $entryId,
+        string|HatenaDOMDocument $content,
+        string|null $title = null,
+        string $contentType = 'text/plain',
+        bool $draft = true,
+        string|null $updated = null,
+        string|null $customUrl = null,
+        array $categories = []
+    ): ResponseInterface&HatenaEditPostByEntryIdResponseInterface;
+
+//    /**
+//     * Fetch existing categories.
+//     *
+//     * @note unused
+//     * @return ResponseInterface&HatenaGetCategoriesResponseInterface
+//     */
+//    public function getCategories(): ResponseInterface&HatenaGetCategoriesResponseInterface;
 }
