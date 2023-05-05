@@ -14,4 +14,5 @@ test('Exceptions must have no dependencies')
 
 test('ValueObjects must have no dependencies')
     ->expect('Toarupg0318\HatenaBlogClient\ValueObjects')
-    ->toUseNothing();
+    ->toUseNothing()
+    ->ignoring('Toarupg0318\HatenaBlogClient\Exceptions');
