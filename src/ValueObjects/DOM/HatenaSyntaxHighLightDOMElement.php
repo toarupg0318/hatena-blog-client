@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
 use Stringable;
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaInvalidArgumentException;
 
-final class HatenaSyntaxHighLightDOMElement extends HatenaDOMElement
+final class HatenaSyntaxHighLightDOMElement extends HatenaDOMElement implements Stringable
 {
     /** @var string[] */
     public const LANGUAGES_TO_HANDLE = [
@@ -72,14 +73,23 @@ final class HatenaSyntaxHighLightDOMElement extends HatenaDOMElement
     ];
 
     /**
-     * @param string|null $value
      * @param value-of<self::LANGUAGES_TO_HANDLE> $language
+     * @param string|null $script
+     *
+     * @throws HatenaInvalidArgumentException
      */
     public function __construct(
-        private readonly string|null $value,
-        private readonly string $language
+        private readonly string $language,
+        private readonly string|null $script
     ) {
-        // todo: self::LANGUAGES_TO_HANDLE以外のやつ来たらthrow ex
+        if (in_array($language, self::LANGUAGES_TO_HANDLE, true)) {
+            throw new HatenaInvalidArgumentException(
+                <<<MESSAGE
+Passed programming language is invalid.
+You can get possible programming language in https://help.hatenablog.com/entry/markup/syntaxhighlight
+MESSAGE
+            );
+        }
     }
 
     /**
@@ -89,7 +99,7 @@ final class HatenaSyntaxHighLightDOMElement extends HatenaDOMElement
     {
         return <<<HATENA
 >|{$this->language}|
-$this->value
+$this->script
 ||<
 HATENA;
 

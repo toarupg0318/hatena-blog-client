@@ -20,8 +20,8 @@ use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInt
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaInvalidArgumentException;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
-use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMDocument;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\HatenaDOMDocument;
 
 /**
  * @implements HatenaClientDumper<HatenaClientInterface>

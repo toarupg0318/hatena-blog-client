@@ -6,11 +6,10 @@ namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
 use Stringable;
 
-final class HatenaSuperPreDOMElement extends HatenaDOMElement
+final class HatenaSuperPreDOMElement extends HatenaDOMElement implements Stringable
 {
     public function __construct(
         private readonly string|null $value,
-
     ) {
     }
 
@@ -24,6 +23,5 @@ final class HatenaSuperPreDOMElement extends HatenaDOMElement
 $this->value
 ||<
 HATENA;
-
     }
 }

@@ -6,10 +6,10 @@ namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
 use Toarupg0318\HatenaBlogClient\ValueObjects\FootNote;
 
-final class HatenaH4DOMElement extends HatenaDOMElement implements FootNoteAttachable
+final class HatenaTextDOMElement extends HatenaDOMElement implements FootNoteAttachable
 {
     public function __construct(
-        private readonly string $value
+        private readonly string $text
     ) {
     }
 
@@ -18,7 +18,7 @@ final class HatenaH4DOMElement extends HatenaDOMElement implements FootNoteAttac
      */
     public function __toString(): string
     {
-        return '**' . $this->value . PHP_EOL;
+        return $this->text . PHP_EOL;
     }
 
     /**
@@ -31,7 +31,7 @@ final class HatenaH4DOMElement extends HatenaDOMElement implements FootNoteAttac
             . str_replace(
                 search: $footNote->vocabulary,
                 replace: $footNote->vocabulary . "(( {$footNote->description} ))",
-                subject: $this->value
+                subject: $this->text
             )
             . PHP_EOL;
     }

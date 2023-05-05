@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
+/**
+ * todo: implements FootNoteAttachable
+ */
 final class HatenaLiDOMElement extends HatenaDOMElement
 {
     public const SYNTAX_MINUS = '-';
