@@ -15,6 +15,8 @@ $hatenaApiKey = getenv('HATENA_API_KEY');
 dump('test hoge');
 dump(mb_strlen($hatenaId));
 dump(mb_strlen($hatenaApiKey));
+dump(mb_strlen($_ENV['HATENA_ID']));
+dump(mb_strlen($_ENV['HATENA_API_KEY']));
 //
 //$hatenaClient = HatenaClient::getInstance($hatenaId, $hatenaApiKey);
 //
