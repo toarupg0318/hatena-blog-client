@@ -6,12 +6,13 @@ use Toarupg0318\HatenaBlogClient\HatenaClient;
 // init env
 $env = Dotenv::createUnsafeImmutable(
     __DIR__ . '/../..',
-    '.env'
+    ['.env', '.env.example']
 );
 $env->safeLoad();
 
 $hatenaId = getenv('HATENA_ID');
 $hatenaApiKey = getenv('HATENA_API_KEY');
+dump('test hoge');
 dump(mb_strlen($hatenaId));
 dump(mb_strlen($hatenaApiKey));
 //
