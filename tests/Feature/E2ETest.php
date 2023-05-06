@@ -6,7 +6,7 @@ use Toarupg0318\HatenaBlogClient\HatenaClient;
 // init env
 $env = Dotenv::createUnsafeImmutable(
     __DIR__ . '/../..',
-    ['.env', '.env.example']
+    '.env'
 );
 $env->safeLoad();
 
