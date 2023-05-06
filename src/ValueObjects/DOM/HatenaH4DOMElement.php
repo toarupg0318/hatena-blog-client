@@ -9,7 +9,7 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\FootNote;
 final class HatenaH4DOMElement extends HatenaDOMElement implements FootNoteAttachable
 {
     public function __construct(
-        private readonly string $value
+        private readonly string $h4Value
     ) {
     }
 
@@ -18,7 +18,7 @@ final class HatenaH4DOMElement extends HatenaDOMElement implements FootNoteAttac
      */
     public function __toString(): string
     {
-        return '**' . $this->value . PHP_EOL;
+        return '**' . $this->h4Value . PHP_EOL;
     }
 
     /**
@@ -31,7 +31,7 @@ final class HatenaH4DOMElement extends HatenaDOMElement implements FootNoteAttac
             . str_replace(
                 search: $footNote->vocabulary,
                 replace: $footNote->vocabulary . "(( {$footNote->description} ))",
-                subject: $this->value
+                subject: $this->h4Value
             )
             . PHP_EOL;
     }
