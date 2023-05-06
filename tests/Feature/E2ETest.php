@@ -14,7 +14,10 @@ $hatenaId = getenv('HATENA_ID');
 $hatenaApiKey = getenv('HATENA_API_KEY');
 dump('test hoge');
 dump(mb_strlen($hatenaId));
+dump((function () use ($hatenaId) {return mb_strlen($hatenaId);})());
+dump('test hoge2');
 dump(mb_strlen($hatenaApiKey));
+dump('test hoge3');
 dump(mb_strlen($_ENV['HATENA_ID']));
 dump(mb_strlen($_ENV['HATENA_API_KEY']));
 //
