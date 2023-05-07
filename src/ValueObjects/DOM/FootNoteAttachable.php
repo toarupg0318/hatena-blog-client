@@ -13,7 +13,16 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\FootNote;
  */
 interface FootNoteAttachable
 {
+    /**
+     * @param FootNote $footNote
+     * @return self
+     */
     public function attachFootNote(FootNote $footNote): self;
 
+    /**
+     * Transform input to foot note attached value.
+     *
+     * @return string
+     */
     public function __toStringWithFootNote(): string;
 }
