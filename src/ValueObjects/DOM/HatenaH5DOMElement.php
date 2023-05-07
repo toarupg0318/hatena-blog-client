@@ -58,6 +58,6 @@ final class HatenaH5DOMElement extends HatenaDOMElement implements FootNoteAttac
             );
         }
 
-        return '*' . $temp . PHP_EOL;
+        return '***' . $temp . PHP_EOL;
     }
 }
