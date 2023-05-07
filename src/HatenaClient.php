@@ -89,8 +89,6 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     }
 
     /**
-     * Fetch blog entries.
-     *
      * @param string|null $page 'https://blog.hatena.ne.jp/hoge0318/fuga0318.hatenablog.com/atom/entry?page=1780929531' or '1780929531'
      * @return ResponseInterface&HatenaGetListResponseInterface
      *
@@ -132,10 +130,6 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     }
 
     /**
-     * Fetch a blog entry posted by entry id.
-     *
-     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom/#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E5%8F%96%E5%BE%97
-     *
      * @param string $entryId it comes from getList.entryId
      * @return ResponseInterface&HatenaGetPostByEntryIdResponseInterface
      *
@@ -177,8 +171,6 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     }
 
     /**
-     * Post blog entry.
-     *
      * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
      * @param string|null $title
      * @param HatenaClientInterface::CONTENT_TYPE_* $contentType
@@ -264,10 +256,6 @@ XML;
     }
 
     /**
-     * Edit existing post entry.
-     *
-     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E7%B7%A8%E9%9B%86
-     *
      * @param string $entryId
      * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
      * @param string|null $title if empty, constant "■" is embedded.
@@ -360,10 +348,6 @@ XML;
     }
 
     /**
-     * Delete existing post by entry id.
-     *
-     * @see https://developer.hatena.ne.jp/ja/documents/blog/apis/atom/#%E3%83%96%E3%83%AD%E3%82%B0%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AE%E5%89%8A%E9%99%A4
-     *
      * @param string $entryId it comes from getList.entryId
      * @return ResponseInterface&HatenaDeletePostByEntryIdResponseInterface
      *
