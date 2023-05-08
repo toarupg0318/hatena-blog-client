@@ -11,9 +11,10 @@ use Toarupg0318\HatenaBlogClient\HatenaClient;
 //$env->safeLoad();
 //
 //$hatenaId = getenv('HATENA_ID');
+//$blogId = getenv('BLOG_ID');
 //$hatenaApiKey = getenv('HATENA_API_KEY');
 //
-//$hatenaClient = HatenaClient::getInstance($hatenaId, $hatenaApiKey);
+//$hatenaClient = HatenaClient::getInstance($hatenaId, $blogId, $hatenaApiKey);
 //
 //it('ensures straight through test connects to Hatena with using actual account', function () {
 //    // post a new blog entry, called as "registered-entry" below.

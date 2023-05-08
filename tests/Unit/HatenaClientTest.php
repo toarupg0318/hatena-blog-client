@@ -3,7 +3,7 @@
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaInvalidArgumentException;
 use Toarupg0318\HatenaBlogClient\HatenaClient;
 
-$hatenaClient = HatenaClient::getInstance('hoge0123', 'fuga0987');
+$hatenaClient = HatenaClient::getInstance('hoge0123', 'fuga8765',  'piyo0987');
 
 it('tests getPostByEntryId() throws exception if passed entryId is empty.', function () use ($hatenaClient) {
     expect(fn () => $hatenaClient->getPostByEntryId(''))

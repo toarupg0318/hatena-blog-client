@@ -37,11 +37,13 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
 
     /**
      * @param string $hatenaId
+     * @param string $blogId
      * @param string $apiKey
      * @param 'basic'|'wsse' $auth
      */
     private function __construct(
         private readonly string $hatenaId,
+        private readonly string $blogId,
         private readonly string $apiKey,
         private readonly string $auth = 'basic'
     ) {
@@ -52,6 +54,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
 
     /**
      * @param string $hatenaId
+     * @param string $blogId
      * @param string $apiKey
      * @param 'basic'|'wsse' $auth
      * @return self
@@ -60,22 +63,24 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
      */
     public static function getInstance(
         string $hatenaId,
+        string $blogId,
         string $apiKey,
         string $auth = 'basic'
     ): self {
         static $hatenaClient;
 
         if (empty($hatenaClient) || empty(self::$memoizedValue)) {
-            self::$memoizedValue = self::calcMemo($hatenaId, $apiKey, $auth);
+            self::$memoizedValue = self::calcMemo($hatenaId, $blogId, $apiKey, $auth);
             $hatenaClient = new self(
-                $hatenaId,
-                $apiKey,
-                $auth
+                hatenaId: $hatenaId,
+                blogId: $blogId,
+                apiKey: $apiKey,
+                auth: $auth
             );
             return $hatenaClient;
         }
 
-        $encodedValue = json_encode([$hatenaId, $apiKey, $auth]);
+        $encodedValue = json_encode([$hatenaId, $blogId, $apiKey, $auth]);
         if ($encodedValue === false) {
             throw new HatenaUnexpectedException();
         }
@@ -117,7 +122,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
         try {
             $response = $this->client
                 ->get(
-                    uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
+                    uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->blogId}/atom/entry",
                     options: $header
                 );
             return new HatenaGetListResponse($response);
@@ -157,7 +162,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
         try {
             $response = $this->client
                 ->get(
-                    uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry/{$entryId}",
+                    uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->blogId}/atom/entry/{$entryId}",
                     options: $header
                 );
             return new HatenaGetPostByEntryIdResponse($response);
@@ -242,7 +247,7 @@ XML;
 
         try {
             $response = $this->client->post(
-                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry",
+                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->blogId}/atom/entry",
                 options: $postData
             );
             return new HatenaPostResponse($response);
@@ -334,7 +339,7 @@ XML;
 
         try {
             $response = $this->client->put(
-                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry/{$entryId}",
+                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->blogId}/atom/entry/{$entryId}",
                 options: $postData
             );
             return new HatenaEditPostByEntryIdResponse($response);
@@ -373,7 +378,7 @@ XML;
 
         try {
             $response = $this->client->delete(
-                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaId}.hatenablog.com/atom/entry/{$entryId}",
+                uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->blogId}/atom/entry/{$entryId}",
                 options: $header
             );
             return new HatenaDeletePostByEntryIdResponse($response);
@@ -388,15 +393,22 @@ XML;
 
     /**
      * @internal
+     *
      * @param string $hatenaId
+     * @param string $blogId
      * @param string $apiKey
      * @param string $auth
      * @return int
+     *
      * @throws HatenaUnexpectedException
      */
-    private static function calcMemo(string $hatenaId, string $apiKey, string $auth): int
-    {
-        $encodedValue = json_encode([$hatenaId, $apiKey, $auth]);
+    private static function calcMemo(
+        string $hatenaId,
+        string $blogId,
+        string $apiKey,
+        string $auth
+    ): int {
+        $encodedValue = json_encode([$hatenaId, $blogId, $apiKey, $auth]);
         if (! is_string($encodedValue)) {
             throw new HatenaUnexpectedException();
         }
