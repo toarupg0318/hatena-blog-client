@@ -8,6 +8,7 @@ use Generator;
 use IteratorAggregate;
 use Stringable;
 use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\FootNoteAttachable;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDOMElement;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaH3DOMElement;
 
@@ -61,29 +62,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable
         return $this->append(new HatenaH3DOMElement($h3Value));
     }
 
-//    /**
-//     * @param string $vocabulary
-//     * @param string $description
-//     * @return self
-//     *
-//     * @example
-//     * ```
-//     *  param1: 'ChatGPT'
-//     *  param2: 'アメリカのOpen AI社が開発した、人工知能（AI）を使ったチャットサービスのこと。'
-//     * ```
-//     *
-//     * @throws HatenaUnexpectedException
-//     */
-//    public function setFootNote(
-//        string $vocabulary,
-//        string $description
-//    ): self {
-//        return new self(
-//            hatenaDOMElementList: $this->hatenaDOMElementList,
-//            footNotes: [new FootNote($vocabulary, $description)]
-//        );
-//    }
-
     /**
      * @return Generator<int, HatenaDOMElement>
      */
@@ -100,7 +78,9 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable
         return implode(
             separator: PHP_EOL,
             array: array_map(function (HatenaDOMElement $hatenaDOMElement) {
-                return $hatenaDOMElement->__toString();
+                return ($hatenaDOMElement instanceof FootNoteAttachable)
+                    ? $hatenaDOMElement->__toStringWithFootNote()
+                    : $hatenaDOMElement->__toString();
             }, $this->hatenaDOMElementList)
         );
     }
