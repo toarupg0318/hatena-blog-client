@@ -15,11 +15,83 @@
 
 > [PHP 8.1+](https://php.net/releases/) が必要です
 
+
+### 準備
+
 はじめに、はてなブログに接続するために認証情報を[詳細設定](https://blog.hatena.ne.jp/my/config/detail)から取得してください。
+
+設定 > 詳細設定
+<img src="https://github.com/toarupg0318/hatena-blog-client/raw/master/art/hatena_secrets.png" width="600">
+
+
+<br />
+
+以下コマンドでcomposerでインストールしてください。
 
 ```bash
 composer require toarupg0318/hatena-blog-client
 ```
+
+以下のようにクライアントインスタンスを取得します。
+```PHP
+use Toarupg0318\HatenaBlogClient\HatenaClient;
+...
+$hatenaClient = HatenaClient::getInstance(
+    'あなたのはてなID',
+    'あなたのブログID',
+    'あなたのAPIキー'
+);
+```
+  
+### 記事投稿
+- HTMLモード（見たままモード）
+- はてな記法モード
+
+での投稿ができます。 ※ マークダウン記法は未実装です。  
+以下、各モードでのサンプルコードを記載します。
+
+#### `HTMLモード（見たままモード）`
+```PHP
+    $content = <<<CONTENT
+<main>
+    <section>
+        <h2>見出し1</h2>
+        <p>これは<em>サンプルの文章</em>です。
+        この記事では、簡単なHTMLサンプルを紹介しています。詳細については、<a href="#">こちら</a>をクリックしてください。</p>
+    </section>
+    <section>
+        <h2>見出し2</h2>
+        <p>この<em>サンプル記事</em>は、HTMLタグをいくつか使用しています。これにより、より見栄えの良いコンテンツを作成できます。</p>
+        <ul>
+            <li>リスト項目1</li>
+            <li>リスト項目2</li>
+            <li>リスト項目3</li>
+        </ul>
+    </section>
+</main>
+CONTENT;
+
+$response = $hatenaClient
+    ->post($content)
+    ->getParsedData();
+$response = $hatenaClient
+    ->post($content)
+    ->getParsedData();
+```
+
+#### `はてな記法モード`
+
+
+
+### 記事一覧取得
+
+### 記事取得
+
+### 記事編集
+
+### 記事削除
+
+<br />
 
 ## 開発者向け
 
