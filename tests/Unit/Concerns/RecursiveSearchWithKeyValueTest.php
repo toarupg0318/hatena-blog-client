@@ -17,6 +17,12 @@ it(
             'link' => [
                 [
                     '@attributes' => [
+                        $key1 => 'next',
+                        $key2 => 'foobarpiyo9876',
+                    ]
+                ],
+                [
+                    '@attributes' => [
                         $key1 => $value1,
                         $key2 => $dataToSearch,
                     ]
