@@ -40,39 +40,30 @@ trait RecursiveSearchWithKeyValueTrait
      * ```
      */
     public function recursiveSearchWithKeyValue(
-        array  $arrayToSearch,
+        array $arrayToSearch,
         string $searchKey,
         string $searchValue,
         string $siblingKey
     ): string|null {
-        foreach ($arrayToSearch as $childArrayToLex) {
-            if (
-                is_array($childArrayToLex) &&
-                array_key_exists($searchKey, $childArrayToLex)
-            ) {
-                $extractedSearchValue = $childArrayToLex[$searchKey] ?? null;
-                if ($extractedSearchValue !== $searchValue) {
-                    return $this->recursiveSearchWithKeyValue(
-                        arrayToSearch: $childArrayToLex,
-                        searchKey: $searchKey,
-                        searchValue: $searchValue,
-                        siblingKey: $siblingKey
+        foreach ($arrayToSearch as $itemToLex) {
+            if (is_array($itemToLex)) {
+                if (
+                    array_key_exists($searchKey, $itemToLex) &&
+                    $itemToLex[$searchKey] === $searchValue &&
+                    array_key_exists($siblingKey, $itemToLex)
+                ) {
+                    return $itemToLex[$siblingKey];
+                } else {
+                    $return = $this->recursiveSearchWithKeyValue(
+                        $itemToLex,
+                        $searchKey,
+                        $searchValue,
+                        $siblingKey
                     );
+                    if ($return !== null) {
+                        return $return;
+                    }
                 }
-                $extractedSiblingValue = $childArrayToLex[$siblingKey] ?? null;
-                return empty($extractedSiblingValue)
-                    ? null
-                    : strval($extractedSiblingValue);
-            } else {
-                if (! is_array($childArrayToLex)) {
-                    continue;
-                }
-                return $this->recursiveSearchWithKeyValue(
-                    arrayToSearch: $childArrayToLex,
-                    searchKey: $searchKey,
-                    searchValue: $searchValue,
-                    siblingKey: $siblingKey
-                );
             }
         }
 
