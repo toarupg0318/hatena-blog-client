@@ -6,51 +6,52 @@ namespace Toarupg0318\HatenaBlogClient;
 
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
+use Toarupg0318\HatenaBlogClient\Concerns\GetParsedDataFromResponseContentTrait;
+use Toarupg0318\HatenaBlogClient\Concerns\RecursiveSearchWithKeyValueTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaPostResponseInterface;
-use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
 
 final class HatenaPostResponse extends Response implements ResponseInterface, HatenaPostResponseInterface
 {
-    /** @var array<string, mixed> $parsedData */
-    private static array $parsedData;
+    use RecursiveSearchWithKeyValueTrait;
+    use GetParsedDataFromResponseContentTrait;
+
+    private readonly StreamInterface $stream;
+
+    /** @var array<string, mixed>|null $parsedData */
+    private array|null $parsedData = null;
 
     /**
      * @param ResponseInterface $response
-     * @throws HatenaHttpException
      */
-    public function __construct(
-        public readonly ResponseInterface $response
-    ) {
-        parent::__construct();
-
-        $jsonEncodedData = json_encode(
-            value: simplexml_load_string(
-                data: $this->response->getBody()->getContents()
-            )
+    public function __construct(ResponseInterface $response) {
+        parent::__construct(
+            status: $response->getStatusCode(),
+            headers: $response->getHeaders(),
+            body: $response->getBody(),
+            version: $response->getProtocolVersion(),
+            reason: $response->getReasonPhrase()
         );
-        if ($jsonEncodedData === false) {
-            throw new HatenaHttpException();
-        }
-
-        $jsonDecodedData = json_decode(
-            json: $jsonEncodedData,
-            associative: true
-        );
-        unset($jsonEncodedData);
-        if (! is_array($jsonDecodedData)) {
-            throw new HatenaHttpException();
-        }
-
-        self::$parsedData = $jsonDecodedData;
+        $this->stream = $response->getBody();
     }
 
     /**
      * Get array-decoded whole data.
      *
      * @return array<string, mixed>
+     *
+     * @throws HatenaUnexpectedException
      */
     public function getParsedData(): array
     {
-        return self::$parsedData;
+        if ($this->parsedData === null) {
+            $parsedData = $this->getParsedDataFromResponseContent(
+                $this->stream->getContents()
+            );
+            $this->parsedData = $parsedData;
+        }
+
+        return $this->parsedData;
     }
 }

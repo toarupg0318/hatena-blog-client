@@ -392,6 +392,8 @@ XML;
     }
 
     /**
+     * @internal
+     *
      * @param string $hatenaId
      * @param string $hatenaBlogId
      * @param string $apiKey
