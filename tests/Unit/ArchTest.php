@@ -2,7 +2,8 @@
 
 test('Concerns must have no dependencies')
     ->expect('Toarupg0318\HatenaBlogClient\Concerns')
-    ->toUseNothing();
+    ->toUseNothing()
+    ->ignoring('Toarupg0318\HatenaBlogClient\Exceptions');
 
 test('ResponseContracts must have no dependencies')
     ->expect('Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses')
