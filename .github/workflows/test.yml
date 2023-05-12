@@ -24,7 +24,7 @@ jobs:
         env:
           HATENA_ID: ${{ secrets.HATENA_ID }}
           HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
-        run: ./vendor/bin/pest --migrate-configuration --coverage-clover=clover.xml
+        run: ./vendor/bin/pest --coverage-clover=clover.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
