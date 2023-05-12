@@ -63,6 +63,5 @@ it(
                 $key2 . 'piyo'
             ))
             ->toBeNull('key2 is invalid');
-
     }
 );

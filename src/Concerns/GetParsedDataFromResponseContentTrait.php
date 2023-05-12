@@ -12,17 +12,21 @@ use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
 trait GetParsedDataFromResponseContentTrait
 {
     /**
+     * Convert XML to array.
+     *
+     * @param string $content
      * @return array<string, mixed>
      *
      * @throws HatenaUnexpectedException
      */
     private function getParsedDataFromResponseContent(string $content): array
     {
-        $jsonEncodedData = json_encode(
-            value: simplexml_load_string(
-                data: $content
-            )
-        );
+        $xmlElement = simplexml_load_string(data: $content);
+        if ($xmlElement === false) {
+            throw new HatenaUnexpectedException('Failed to process the response from Hatena.');
+        }
+
+        $jsonEncodedData = json_encode(value: $xmlElement);
         if ($jsonEncodedData === false) {
             throw new HatenaUnexpectedException('Failed to process the response from Hatena.');
         }
