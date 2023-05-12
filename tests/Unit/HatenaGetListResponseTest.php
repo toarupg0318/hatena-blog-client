@@ -6,15 +6,17 @@ use Psr\Http\Message\ResponseInterface;
 use Toarupg0318\HatenaBlogClient\HatenaGetListResponse;
 
 // dummy response has 3 entries
+$firstPageUrl = 'https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry';
+$nextPageUrl = 'https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry?page=1683098689';
 $dummyResponseBody = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:app="http://www.w3.org/2007/app">
 
-  <link rel="first" href="https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry" />
+  <link rel="first" href="{$firstPageUrl}" />
 
   
-  <link rel="next" href="https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry?page=1683098689" />
+  <link rel="next" href="{$nextPageUrl}" />
   
 
   <title>hogefugablog</title>
@@ -235,5 +237,53 @@ it(
                     'categories' => ['foo', 'bar'],
                 ]
             ]);
+    }
+);
+
+it(
+    'tests getFirstPageUrl() performs correctly.',
+    function () use ($getListResponseMock, $dummyResponseBody, $firstPageUrl) {
+        $getListResponseReflection = new ReflectionClass($getListResponseMock);
+        $getFirstPageUrlMethod = $getListResponseReflection
+            ->getMethod('getFirstPageUrl');
+        $getFirstPageUrlMethod->setAccessible(true);
+        $fetchedPageUrl = $getFirstPageUrlMethod
+            ->invoke(
+                $getListResponseMock,
+                json_decode(
+                    json_encode(
+                        simplexml_load_string(
+                            $dummyResponseBody
+                        )
+                    ),
+                    true
+                )
+            );
+
+        expect($fetchedPageUrl)->toBe($firstPageUrl);
+    }
+);
+
+it(
+    'tests getNextPageUrl() performs correctly.',
+    function () use ($getListResponseMock, $dummyResponseBody, $nextPageUrl) {
+        $getListResponseReflection = new ReflectionClass($getListResponseMock);
+        $getNextPageUrlMethod = $getListResponseReflection
+            ->getMethod('getNextPageUrl');
+        $getNextPageUrlMethod->setAccessible(true);
+        $fetchedPageUrl = $getNextPageUrlMethod
+            ->invoke(
+                $getListResponseMock,
+                json_decode(
+                    json_encode(
+                        simplexml_load_string(
+                            $dummyResponseBody
+                        )
+                    ),
+                    true
+                )
+            );
+
+        expect($fetchedPageUrl)->toBe($nextPageUrl);
     }
 );
