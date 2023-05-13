@@ -63,6 +63,7 @@ it('ensures straight through test connects to Hatena with using actual account',
             ->toBeIn($categories);
     }
     $registeredEntryId = $postResponseObject->getEntryId();
+    dump($registeredEntryId);
     sleep(1);
 
     // get the registered-entry, confirm registered-entry is fetched correctly.
