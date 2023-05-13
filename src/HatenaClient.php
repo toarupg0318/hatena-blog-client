@@ -86,11 +86,10 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
         }
 
         $checkSum = crc32($encodedValue);
-        if ($checkSum === self::$memoizedValue) {
-            return $hatenaClient;
+        if ($checkSum !== self::$memoizedValue) {
+            $hatenaClient = new self($hatenaId, $hatenaBlogId, $apiKey, $auth);
         }
-
-        throw new HatenaUnexpectedException();
+        return $hatenaClient;
     }
 
     /**
