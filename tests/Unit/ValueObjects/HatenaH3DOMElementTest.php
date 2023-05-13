@@ -1,5 +1,6 @@
 <?php
 
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaInvalidArgumentException;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaH3DOMElement;
 use Toarupg0318\HatenaBlogClient\ValueObjects\FootNote;
 
@@ -28,4 +29,20 @@ it('tests HatenaH3DOMElement performs correctly', function () {
         ->attachFootNote(new FootNote('piyo', 'piyo脚注'));
     expect($hatenaH3DOMElementHaveMultipleFootNotes->__toStringWithFootNote())
         ->toBe("*h3 見出し テスト 複数脚注 hoge(( hoge脚注 )) fuga(( fuga脚注 )) piyo(( piyo脚注 )) \n");
+
+    $hatenaH3DOMElementWithFootNotes = new HatenaH3DOMElement(
+        '初期脚注あり',
+        [
+            new FootNote('hoge', 'hoge脚注'),
+            new FootNote('fuga', 'fuga脚注')
+        ]
+    );
+    expect($hatenaH3DOMElementWithFootNotes->__toString())
+        ->toBe("*初期脚注あり\n")
+        ;
+});
+
+it('tests throws exception correctly.', function () {
+    expect(fn () => new HatenaH3DOMElement('foo', [new stdClass()]))
+        ->toThrow(HatenaInvalidArgumentException::class);
 });
