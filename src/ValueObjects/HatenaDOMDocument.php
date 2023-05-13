@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Toarupg0318\HatenaBlogClient\ValueObjects;
 
+use Countable;
 use Generator;
 use IteratorAggregate;
 use Stringable;
@@ -15,7 +16,7 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaH3DOMElement;
 /**
  * @implements IteratorAggregate<HatenaDOMElement>
  */
-final class HatenaDOMDocument implements IteratorAggregate, Stringable
+final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countable
 {
     /**
      * @param HatenaDOMElement[] $hatenaDOMElementList
@@ -83,5 +84,13 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable
                     : $hatenaDOMElement->__toString();
             }, $this->hatenaDOMElementList)
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->hatenaDOMElementList);
     }
 }
