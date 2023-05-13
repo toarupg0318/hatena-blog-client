@@ -10,4 +10,9 @@ interface HatenaPostResponseInterface
      * @return array<string, mixed>
      */
     public function getParsedData(): array;
+
+    /**
+     * @return string
+     */
+    public function getEntryId(): string;
 }
