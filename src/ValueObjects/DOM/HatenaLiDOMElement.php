@@ -15,7 +15,7 @@ final class HatenaLiDOMElement extends HatenaDOMElement
     /**
      * @param array{
      *     header: string|null,
-     *     lines: array<int<0, max>, string|null>
+     *     lines: string[]
      * } $table
      * @param self::SYNTAX_* $tag
      */
@@ -26,10 +26,10 @@ final class HatenaLiDOMElement extends HatenaDOMElement
     }
 
     /**
-     * @param string|null $additionalLineValue
+     * @param string $additionalLineValue
      * @return self
      */
-    public function append(string|null $additionalLineValue): self
+    public function append(string $additionalLineValue): self
     {
         $lineValues = $this->table['lines'];
         $lineValues[] = $additionalLineValue;
