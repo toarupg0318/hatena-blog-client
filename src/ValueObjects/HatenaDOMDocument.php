@@ -18,6 +18,19 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaDtDOMElement;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaH3DOMElement;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaH4DOMElement;
 use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaH5DOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaHTTPDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaIdDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaLiDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaPreDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaReadMoreElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaStopPDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaSuperPreDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaSyntaxHighLightDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaTableDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaTableOfContentsDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaTexDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaTextDOMElement;
+use Toarupg0318\HatenaBlogClient\ValueObjects\DOM\HatenaTwitterDOMElement;
 
 /**
  * @implements IteratorAggregate<HatenaDOMElement>
@@ -26,6 +39,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
 {
     /**
      * @param HatenaDOMElement[] $hatenaDOMElementList
+     *
      * @throws HatenaUnexpectedException
      */
     private function __construct(
@@ -49,6 +63,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     /**
      * @param HatenaDOMElement $hatenaDOMElement
      * @return self<HatenaDOMElement>
+     *
      * @throws HatenaUnexpectedException
      */
     private function append(HatenaDOMElement $hatenaDOMElement): self {
@@ -62,6 +77,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     /**
      * @param string $h3Value
      * @return self
+     *
      * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
      */
     public function appendH3(string $h3Value): self
@@ -72,6 +88,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     /**
      * @param string $h4Value
      * @return self
+     *
      * @throws HatenaInvalidArgumentException|HatenaUnexpectedException
      */
     public function appendH4(string $h4Value): self
@@ -82,6 +99,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     /**
      * @param string $h5Value
      * @return self
+     *
      * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
      */
     public function appendH5(string $h5Value): self
@@ -93,6 +111,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
      * @param string $value
      * @param string|null $url
      * @return self
+     *
      * @throws HatenaUnexpectedException
      */
     public function appendBlockQuote(
@@ -104,6 +123,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
 
     /**
      * @return self
+     *
      * @throws HatenaUnexpectedException
      */
     public function appendBr(): self
@@ -112,9 +132,157 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
+     * @param string $url
+     * @param value-of<HatenaHTTPDOMElement::OPTIONAL_TAGS>|null $optionTag
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendHttp(string $url, string $optionTag = null): self
+    {
+        return $this->append(new HatenaHTTPDOMElement($url, $optionTag));
+    }
+
+    /**
+     * @param string $hatenaId
+     * @param value-of<HatenaIdDOMElement::OPTIONAL_TAGS>|null $optionalTag
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendId(string $hatenaId, string|null $optionalTag = null): self
+    {
+        return $this->append(new HatenaIdDOMElement($hatenaId, $optionalTag));
+    }
+
+    /**
+     * @param array{
+     *     header: string|null,
+     *     lines: string[]
+     * } $table
+     * @param HatenaLiDOMElement::SYNTAX_* $tag
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendLi(array $table, string $tag = '-'): self
+    {
+        return $this->append(new HatenaLiDOMElement($table, $tag));
+    }
+
+    /**
+     * @param string $value
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendPre(string $value): self
+    {
+        return $this->append(new HatenaPreDOMElement($value));
+    }
+
+    /**
+     * @param string $value
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendSuperPre(string $value): self
+    {
+        return $this->append(new HatenaSuperPreDOMElement($value));
+    }
+
+    /**
+     * @param value-of<HatenaSyntaxHighLightDOMElement::LANGUAGES_TO_HANDLE> $language
+     * @param string $script
+     * @return self
+     *
+     * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
+     */
+    public function appendSyntaxHighLight(string $language, string $script): self
+    {
+        return $this->append(new HatenaSyntaxHighLightDOMElement($language, $script));
+    }
+
+    /**
+     * @param string $texScript
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendTex(string $texScript): self
+    {
+        return $this->append(new HatenaTexDOMElement($texScript));
+    }
+
+    /**
+     * @param string $text
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendText(string $text): self
+    {
+        return $this->append(new HatenaTextDOMElement($text));
+    }
+
+    /**
+     * @param string $status
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendTwitter(string $status): self
+    {
+        return $this->append(new HatenaTwitterDOMElement($status));
+    }
+
+    /**
+     * @throws HatenaUnexpectedException
+     */
+    public function appendReadMore(): self
+    {
+        return $this->append(new HatenaReadMoreElement());
+    }
+
+    /**
+     * @param string $value
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendStopP(string $value): self
+    {
+        return $this->append(new HatenaStopPDOMElement($value));
+    }
+
+    /**
+     * @param array{
+     *     headers: array<int<0, max>, string|null>,
+     *     lines: array<int<0, max>, array<int<0, max>, string|null>>
+     * } $table
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendTable(array $table): self
+    {
+        return $this->append(new HatenaTableDOMElement($table));
+    }
+
+    /**
+     * @return self
+     *
+     * @throws HatenaUnexpectedException
+     */
+    public function appendTableOfContents(): self
+    {
+        return $this->append(new HatenaTableOfContentsDOMElement());
+    }
+
+    /**
      * @param string $title
      * @param string $description
      * @return self
+     *
      * @throws HatenaUnexpectedException
      */
     public function appendDt(
