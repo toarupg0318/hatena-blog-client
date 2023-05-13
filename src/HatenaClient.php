@@ -245,6 +245,8 @@ XML;
         );
 
         try {
+            dump($this->hatenaId);
+            dump($this->hatenaBlogId);
             $response = $this->client->post(
                 uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaBlogId}/atom/entry",
                 options: $postData
