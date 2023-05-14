@@ -22,10 +22,11 @@ final class HatenaBlockQuoteDOMElement extends HatenaDOMElement
             : ">{$this->url}//>";
         $suffix = '<<';
 
-        return <<<HATENA
+        $rawContent = <<<HATENA
 $prefix
 $this->value
 $suffix
 HATENA;
+        return htmlspecialchars($rawContent);
     }
 }

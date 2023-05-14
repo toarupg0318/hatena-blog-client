@@ -18,10 +18,11 @@ final class HatenaSuperPreDOMElement extends HatenaDOMElement implements Stringa
      */
     public function __toString(): string
     {
-        return <<<HATENA
+        $rawContent = <<<HATENA
 >||
 $this->value
 ||<
 HATENA;
+        return htmlspecialchars($rawContent);
     }
 }
