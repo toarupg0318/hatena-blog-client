@@ -1,5 +1,3 @@
-{{編集予定}}
-
 <p align="center">
   <img src="https://github.com/toarupg0318/hatena-blog-client/raw/master/art/example.png" width="600">
   <p align="center">
@@ -12,7 +10,6 @@
   </p>
 </p>
 
-------
 
 ## 使い方
 
@@ -75,12 +72,19 @@ $hatenaClient = HatenaClient::getInstance(
 CONTENT;
 
 $response = $hatenaClient
-    ->post($content)
-    ->getParsedData();
-$response = $hatenaClient
-    ->post($content)
-    ->getParsedData();
+    ->post(
+        content: $content,
+        title: 'HTML投稿',
+        draft: false,
+        categories: ['foo', 'bar']  // はてなカテゴリ編集画面で存在しないカテゴリは新規追加されます
+    );
+
+// $response->getParsedData();  // レスポンス取得
+// $response->getEntryId();     // ブログのエントリID（記事のユニークID）の取得
 ```
+投稿編集画面では以下のようになります。
+<img src="https://github.com/toarupg0318/hatena-blog-client/raw/master/art/html_post.png" width="600">
+
 
 #### `はてな記法モード`
 
@@ -93,12 +97,14 @@ $response = $hatenaClient
 ### 記事編集
 
 ### 記事削除
+取得したエントリIDを引数に指定して記事を削除することができます。
+```PHP
+$client->deletePostByEntryId('4207575167685628272');
+```
 
 <br />
 
 ## 開発者向け
-
-------
 
 ### 開発への参加
 開発の方針がまだ定まっていないですが、プルリクエストは適宜受け付けています。
@@ -114,13 +120,13 @@ HATENA_ID=hoge6789
 HATENA_BLOG_ID=hoge6789.hatenablog.com
 HATENA_API_KEY=foo78bar90
 ```
-その後、以下コマンドで [Pest(v2.5.0)](https://pestphp.com/) によるテストを実行できます。
+その後、以下コマンドで [Pest](https://pestphp.com/) によるテストを実行できます。
 ```bash
 ./vendor/bin/pest
 ```
 
 ### 静的解析
-以下コマンドで [PHPStan(v1.10.13)](https://phpstan.org/) による静的解析を実行できます。
+以下コマンドで [PHPStan](https://phpstan.org/) による静的解析を実行できます。
 ```bash
 ./vendor/bin/phpstan analyse
 ```
