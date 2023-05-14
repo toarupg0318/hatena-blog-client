@@ -200,7 +200,9 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
             throw new HatenaUnexpectedException();
         }
 
-        $contentInXML = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
+        $contentInXML = htmlspecialchars(
+            ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content
+        );
         $draftYesOrNo = ($draft) ? 'yes' : 'no';
         $categoriesImXml = implode(
             separator: '',
@@ -292,7 +294,9 @@ XML;
             throw new HatenaUnexpectedException();
         }
 
-        $contentInXML = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
+        $contentInXML = htmlspecialchars(
+            ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content
+        );
         $draftYesOrNo = ($draft) ? 'yes' : 'no';
         $categoriesImXml = implode(
             separator: '',
@@ -400,8 +404,6 @@ XML;
      * @return int
      *
      * @throws HatenaUnexpectedException
-     *@internal
-     *
      */
     private static function calcMemo(
         string $hatenaId,

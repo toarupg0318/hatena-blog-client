@@ -16,11 +16,10 @@ final class HatenaStopPDOMElement extends HatenaDOMElement
      */
     public function __toString(): string
     {
-        $rawContent = <<<HATENA
+        return <<<HATENA
 ><
 $this->value
 ><
 HATENA;
-        return htmlspecialchars($rawContent);
     }
 }

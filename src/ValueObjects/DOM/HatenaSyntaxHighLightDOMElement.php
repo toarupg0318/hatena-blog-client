@@ -97,11 +97,10 @@ MESSAGE
      */
     public function __toString(): string
     {
-        $rawContent = <<<HATENA
+        return <<<HATENA
 >|{$this->language}|
 $this->script
 ||<
 HATENA;
-        return htmlspecialchars($rawContent);
     }
 }

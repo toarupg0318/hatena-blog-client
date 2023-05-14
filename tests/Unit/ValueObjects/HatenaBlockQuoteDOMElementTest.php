@@ -8,9 +8,9 @@ it('tests HatenaBlockQuoteDOMElement performs correctly.', function () {
     expect($hatenaBlockQuoteDOMElement->__toString())
         ->toBe(
             <<<HATENA
-&gt;test url//&gt;
+>test url//>
 test value
-&lt;&lt;
+<<
 HATENA
         );
 });

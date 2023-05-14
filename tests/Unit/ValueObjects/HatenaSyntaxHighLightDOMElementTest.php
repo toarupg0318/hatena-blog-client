@@ -11,9 +11,9 @@ it('tests HatenaSyntaxHighLightDOMElement performs correctly.', function () {
     expect($hatenaSyntaxHighLightDOMElement->__toString())
         ->toBe(
             <<<HATENA
-&gt;|php|
+>|php|
 php script
-||&lt;
+||<
 HATENA
         );
 });
