@@ -6,55 +6,54 @@ namespace Toarupg0318\HatenaBlogClient;
 
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
-use Toarupg0318\HatenaBlogClient\Concerns\RecursiveSearchWithKeyValueTrait;
+use Psr\Http\Message\StreamInterface;
+use Toarupg0318\HatenaBlogClient\Concerns\GetParsedDataFromResponseContentTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaDeletePostByEntryIdResponseInterface;
-use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
 
 final class HatenaDeletePostByEntryIdResponse extends Response implements ResponseInterface, HatenaDeletePostByEntryIdResponseInterface
 {
-    /** @var array<string, mixed> $parsedData */
-    private static array $parsedData;
+    use GetParsedDataFromResponseContentTrait;
+
+    private readonly StreamInterface $stream;
+
+    /** @var array<string, mixed>|null $parsedData */
+    private array|null $parsedData = null;
 
     /**
      * @param ResponseInterface $response
-     * @throws HatenaHttpException
      */
-    public function __construct(
-        public readonly ResponseInterface $response
-    ) {
-        parent::__construct();
-
-        $jsonEncodedData = json_encode(
-            value: simplexml_load_string(
-                data: $this->response->getBody()->getContents()
-            )
+    public function __construct(ResponseInterface $response) {
+        parent::__construct(
+            status: $response->getStatusCode(),
+            headers: $response->getHeaders(),
+            body: $response->getBody(),
+            version: $response->getProtocolVersion(),
+            reason: $response->getReasonPhrase()
         );
-        if ($jsonEncodedData === false || $jsonEncodedData === 'false') {
-            // Only delete is empty response
-            self::$parsedData = [];
-            return;
-        }
-
-        $jsonDecodedData = json_decode(
-            json: $jsonEncodedData,
-            associative: true
-        );
-        unset($jsonEncodedData);
-
-        if (! is_array($jsonDecodedData)) {
-            throw new HatenaHttpException();
-        }
-
-        self::$parsedData = $jsonDecodedData;
+        $this->stream = $response->getBody();
     }
 
     /**
      * Get array-decoded whole data.
      *
      * @return array<string, mixed>
+     *
+     * @throws HatenaUnexpectedException
      */
     public function getParsedData(): array
     {
-        return self::$parsedData;
+        if ($this->parsedData === null) {
+            $contents = $this->stream->getContents();
+            // only delete endpoint responses an empty body
+            if (! empty($contents)) {
+                $parsedData = $this->getParsedDataFromResponseContent($contents);
+            } else {
+                $parsedData = [];
+            }
+            $this->parsedData = $parsedData;
+        }
+
+        return $this->parsedData;
     }
 }

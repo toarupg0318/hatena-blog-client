@@ -6,15 +6,17 @@ use Psr\Http\Message\ResponseInterface;
 use Toarupg0318\HatenaBlogClient\HatenaGetListResponse;
 
 // dummy response has 3 entries
+$firstPageUrl = 'https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry';
+$nextPageUrl = 'https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry?page=1683098689';
 $dummyResponseBody = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:app="http://www.w3.org/2007/app">
 
-  <link rel="first" href="https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry" />
+  <link rel="first" href="{$firstPageUrl}" />
 
   
-  <link rel="next" href="https://blog.hatena.ne.jp/toarupg0318/toarupg0318.hatenablog.com/atom/entry?page=1683098689" />
+  <link rel="next" href="{$nextPageUrl}" />
   
 
   <title>hogefugablog</title>
@@ -137,11 +139,45 @@ XML;
 $guzzleResponseMock = Mockery::mock(Response::class);
 $guzzleStreamMock = Mockery::mock(Stream::class);
 $guzzleResponseMock
+    ->shouldReceive('getStatusCode')
+    ->andReturns(200);
+$guzzleResponseMock
+    ->shouldReceive('getHeaders')
+    ->andReturns([
+        "Server" => ["nginx"],
+        "Date" => ["Wed, 10 May 2023 04:35:25 GMT"],
+        "Content-Type" => ["application/atom+xml; charset=utf-8; type=feed"],
+        "Transfer-Encoding" => ["chunked"],
+        "Connection" => ["keep-alive"],
+        "Vary" => ["Accept-Encoding", "Accept-Language,Cookie,Accept-Encoding"],
+        "Set-Cookie" => [
+            "b=$1$24nHWGvr$0FjIBiO0WEfPZBJ7RzKFx1; expires=Tue, 05 May 2043 04:35:25 GMT; domain=example.com; path=/",
+            "ek=; path=/; expires=Wed, 10-May-2023 03:35:25 GMT",
+            "sk=ebde5674e82b84bed2e17ac870ed94fda1efc4e8; path=/"
+        ],
+        "Cache-Control" => ["private"],
+        "Content-Security-Policy-Report-Only" => ["block-all-mixed-content; report-uri https://example.com/api/csp_report"],
+        "P3P" => ["CP=\"OTI CUR OUR BUS STA\""],
+        "X-Content-Type-Options" => ["nosniff"],
+        "X-Dispatch" => ["Example::Web::Admin::User::Blog::AtomPub#list"],
+        "X-Frame-Options" => ["DENY"],
+        "X-Revision" => ["ef047b236870653fbe30bff847ec33"],
+        "X-XSS-Protection" => ["1"],
+        "X-Runtime" => ["0.054778"],
+        "X-Proxy-Revision" => ["f843f7e"]
+    ]);
+$guzzleResponseMock
     ->shouldReceive('getBody')
     ->andReturns($guzzleStreamMock);
 $guzzleStreamMock
     ->shouldReceive('getContents')
     ->andReturns($dummyResponseBody);
+$guzzleResponseMock
+    ->shouldReceive('getProtocolVersion')
+    ->andReturns('1.1');
+$guzzleResponseMock
+    ->shouldReceive('getReasonPhrase')
+    ->andReturns('OK');
 
 if (! $guzzleResponseMock instanceof ResponseInterface) {
     throw new LogicException();
@@ -201,5 +237,53 @@ it(
                     'categories' => ['foo', 'bar'],
                 ]
             ]);
+    }
+);
+
+it(
+    'tests getFirstPageUrl() performs correctly.',
+    function () use ($getListResponseMock, $dummyResponseBody, $firstPageUrl) {
+        $getListResponseReflection = new ReflectionClass($getListResponseMock);
+        $getFirstPageUrlMethod = $getListResponseReflection
+            ->getMethod('getFirstPageUrl');
+        $getFirstPageUrlMethod->setAccessible(true);
+        $fetchedPageUrl = $getFirstPageUrlMethod
+            ->invoke(
+                $getListResponseMock,
+                json_decode(
+                    json_encode(
+                        simplexml_load_string(
+                            $dummyResponseBody
+                        )
+                    ),
+                    true
+                )
+            );
+
+        expect($fetchedPageUrl)->toBe($firstPageUrl);
+    }
+);
+
+it(
+    'tests getNextPageUrl() performs correctly.',
+    function () use ($getListResponseMock, $dummyResponseBody, $nextPageUrl) {
+        $getListResponseReflection = new ReflectionClass($getListResponseMock);
+        $getNextPageUrlMethod = $getListResponseReflection
+            ->getMethod('getNextPageUrl');
+        $getNextPageUrlMethod->setAccessible(true);
+        $fetchedPageUrl = $getNextPageUrlMethod
+            ->invoke(
+                $getListResponseMock,
+                json_decode(
+                    json_encode(
+                        simplexml_load_string(
+                            $dummyResponseBody
+                        )
+                    ),
+                    true
+                )
+            );
+
+        expect($fetchedPageUrl)->toBe($nextPageUrl);
     }
 );

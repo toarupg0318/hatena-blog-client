@@ -86,11 +86,10 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
         }
 
         $checkSum = crc32($encodedValue);
-        if ($checkSum === self::$memoizedValue) {
-            return $hatenaClient;
+        if ($checkSum !== self::$memoizedValue) {
+            $hatenaClient = new self($hatenaId, $hatenaBlogId, $apiKey, $auth);
         }
-
-        throw new HatenaUnexpectedException();
+        return $hatenaClient;
     }
 
     /**
@@ -201,7 +200,9 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
             throw new HatenaUnexpectedException();
         }
 
-        $contentInXML = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
+        $contentInXML = htmlspecialchars(
+            ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content
+        );
         $draftYesOrNo = ($draft) ? 'yes' : 'no';
         $categoriesImXml = implode(
             separator: '',
@@ -293,7 +294,9 @@ XML;
             throw new HatenaUnexpectedException();
         }
 
-        $contentInXML = ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content;
+        $contentInXML = htmlspecialchars(
+            ($content instanceof HatenaDOMDocument) ? $content->__toString() : $content
+        );
         $draftYesOrNo = ($draft) ? 'yes' : 'no';
         $categoriesImXml = implode(
             separator: '',
@@ -392,6 +395,8 @@ XML;
     }
 
     /**
+     * @internal
+     *
      * @param string $hatenaId
      * @param string $hatenaBlogId
      * @param string $apiKey
@@ -399,8 +404,6 @@ XML;
      * @return int
      *
      * @throws HatenaUnexpectedException
-     *@internal
-     *
      */
     private static function calcMemo(
         string $hatenaId,

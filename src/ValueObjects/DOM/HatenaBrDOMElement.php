@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
-final class HatenaBrElement extends HatenaDOMElement
+final class HatenaBrDOMElement extends HatenaDOMElement
 {
     public function __construct() {}
 

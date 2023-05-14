@@ -82,7 +82,7 @@ final class HatenaSyntaxHighLightDOMElement extends HatenaDOMElement implements 
         private readonly string $language,
         private readonly string|null $script
     ) {
-        if (in_array($language, self::LANGUAGES_TO_HANDLE, true)) {
+        if (! in_array($language, self::LANGUAGES_TO_HANDLE, true)) {
             throw new HatenaInvalidArgumentException(
                 <<<MESSAGE
 Passed programming language is invalid.
@@ -102,6 +102,5 @@ MESSAGE
 $this->script
 ||<
 HATENA;
-
     }
 }

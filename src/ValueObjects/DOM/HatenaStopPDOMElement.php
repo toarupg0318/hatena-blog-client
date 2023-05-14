@@ -20,7 +20,6 @@ final class HatenaStopPDOMElement extends HatenaDOMElement
 ><
 $this->value
 ><
-HATENA
- . PHP_EOL;
+HATENA;
     }
 }

@@ -6,9 +6,11 @@ namespace Toarupg0318\HatenaBlogClient;
 
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
+use Toarupg0318\HatenaBlogClient\Concerns\GetParsedDataFromResponseContentTrait;
 use Toarupg0318\HatenaBlogClient\Concerns\RecursiveSearchWithKeyValueTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaResponses\HatenaGetListResponseInterface;
-use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaUnexpectedException;
 
 /**
  * @phpstan-type ParsedEntries = array{
@@ -25,59 +27,64 @@ use Toarupg0318\HatenaBlogClient\Exceptions\HatenaHttpException;
 final class HatenaGetListResponse extends Response implements ResponseInterface, HatenaGetListResponseInterface
 {
     use RecursiveSearchWithKeyValueTrait;
+    use GetParsedDataFromResponseContentTrait;
 
-    /** @var array<string, mixed> $parsedData */
-    private static array $parsedData;
+    private readonly StreamInterface $stream;
+
+    /** @var array<string, mixed>|null $parsedData */
+    private array|null $parsedData = null;
 
     /**
      * @param ResponseInterface $response
-     * @throws HatenaHttpException
      */
-    public function __construct(
-        public readonly ResponseInterface $response
-    ) {
-        parent::__construct();
-
-        $jsonEncodedData = json_encode(
-            value: simplexml_load_string(
-                data: $this->response->getBody()->getContents()
-            )
+    public function __construct(ResponseInterface $response) {;
+        parent::__construct(
+            status: $response->getStatusCode(),
+            headers: $response->getHeaders(),
+            body: $response->getBody(),
+            version: $response->getProtocolVersion(),
+            reason: $response->getReasonPhrase()
         );
-        if ($jsonEncodedData === false) {
-            throw new HatenaHttpException();
-        }
-
-        $jsonDecodedData = json_decode(
-            json: $jsonEncodedData,
-            associative: true
-        );
-        unset($jsonEncodedData);
-        if (! is_array($jsonDecodedData)) {
-            throw new HatenaHttpException();
-        }
-
-        self::$parsedData = $jsonDecodedData;
+        $this->stream = $response->getBody();
     }
 
     /**
      * Get array-decoded whole data.
      *
      * @return array<string, mixed>
+     *
+     * @throws HatenaUnexpectedException
      */
     public function getParsedData(): array
     {
-        return self::$parsedData;
+        if ($this->parsedData === null) {
+            $parsedData = $this->getParsedDataFromResponseContent(
+                $this->stream->getContents()
+            );
+            $this->parsedData = $parsedData;
+        }
+
+        return $this->parsedData;
     }
 
     /**
      * Get first page URL from fetched response.
      *
      * @return string|null
+     *
+     * @throws HatenaUnexpectedException
      */
     public function getFirstPageUrl(): string|null
     {
+        if ($this->parsedData === null) {
+            $parsedData = $this->getParsedDataFromResponseContent(
+                $this->stream->getContents()
+            );
+            $this->parsedData = $parsedData;
+        }
+
         return $this->recursiveSearchWithKeyValue(
-            arrayToSearch: self::$parsedData,
+            arrayToSearch: $this->parsedData,
             searchKey: 'rel',
             searchValue: 'first',
             siblingKey: 'href',
@@ -88,11 +95,20 @@ final class HatenaGetListResponse extends Response implements ResponseInterface,
      * Get next page URL from fetched response.
      *
      * @return string|null
+     *
+     * @throws HatenaUnexpectedException
      */
     public function getNextPageUrl(): string|null
     {
+        if ($this->parsedData === null) {
+            $parsedData = $this->getParsedDataFromResponseContent(
+                $this->stream->getContents()
+            );
+            $this->parsedData = $parsedData;
+        }
+
         return $this->recursiveSearchWithKeyValue(
-            arrayToSearch: self::$parsedData,
+            arrayToSearch: $this->parsedData,
             searchKey: 'rel',
             searchValue: 'next',
             siblingKey: 'href',
@@ -103,13 +119,23 @@ final class HatenaGetListResponse extends Response implements ResponseInterface,
      * Extract human-like structure from Get List response.
      *
      * @return ParsedEntries[]
+     * @throws HatenaUnexpectedException
      */
     public function getParsedEntries(): array
     {
-        return self::extractEntriesFromGetListResponse(self::$parsedData);
+        if ($this->parsedData === null) {
+            $parsedData = $this->getParsedDataFromResponseContent(
+                $this->stream->getContents()
+            );
+            $this->parsedData = $parsedData;
+        }
+
+        return self::extractEntriesFromGetListResponse($this->parsedData);
     }
 
     /**
+     * @internal
+     *
      * @param array<string, mixed> $parsedData
      * @return ParsedEntries[]
      */

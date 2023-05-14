@@ -23,10 +23,10 @@ final class HatenaHTTPDOMElement extends HatenaDOMElement
      */
     public function __toString(): string
     {
-        $optionalTagToEmbed = ($this->optionalTag === null)
-            ? ''
-            : ":{$this->optionalTag}"
-        ;
+        $optionalTagToEmbed
+            = ($this->optionalTag === null && in_array($this->optionalTag, self::OPTIONAL_TAGS, true))
+                ? ''
+                : ":{$this->optionalTag}";
 
         return '['
             . $this->httpUri . $optionalTagToEmbed

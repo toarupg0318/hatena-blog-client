@@ -23,8 +23,16 @@ jobs:
       - name: Tests
         env:
           HATENA_ID: ${{ secrets.HATENA_ID }}
+          HATENA_BLOG_ID: ${{ secrets.HATENA_BLOG_ID }}
           HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
-        run: ./vendor/bin/pest
+        run: ./vendor/bin/pest --coverage-clover=clover.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./clover.xml
+          fail_ci_if_error: true
 
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyse
