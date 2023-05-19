@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaInvalidArgumentException;
+
 final class HatenaTableDOMElement extends HatenaDOMElement
 {
     /**
@@ -11,14 +13,19 @@ final class HatenaTableDOMElement extends HatenaDOMElement
      *     headers: array<int<0, max>, string|null>,
      *     lines: array<int<0, max>, array<int<0, max>, string|null>>
      * } $table
+     *
+     * @throws HatenaInvalidArgumentException
      */
     public function __construct(
         private readonly array $table
     ) {
-        // todo: ヘッダー列数とラインの列数が等しくなかったらthrow ex
+        $headerRowCount = count($table['headers']);
+        foreach ($table['lines'] as $line) {
+            if (count($line) !== $headerRowCount) {
+                throw new HatenaInvalidArgumentException('The number of row is invalid.');
+            }
+        }
     }
-
-    // todo: table操作アクションs
 
     /**
      * @return string
@@ -32,7 +39,7 @@ final class HatenaTableDOMElement extends HatenaDOMElement
                 }, $this->table['headers'])
             ) . '|';
 
-        /** @var string[] $lineParts */ // todo: delete
+        /** @var string[] $lineParts */
         $lineParts = [];
         foreach ($this->table['lines'] as $line) {
             $lineParts[] = implode(
