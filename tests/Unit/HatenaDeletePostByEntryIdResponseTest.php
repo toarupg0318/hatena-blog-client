@@ -58,7 +58,6 @@ $deleteResponseMock = new HatenaDeletePostByEntryIdResponse($guzzleResponseMock)
 it(
     'tests getParsedData() performs correctly.',
     function () use ($deleteResponseMock, $dummyResponseBody) {
-        //dd($deleteResponseMock->getParsedData());
         $deleteResponseReflection = new ReflectionClass($deleteResponseMock);
         $deleteByEntryIdResponseMethod = $deleteResponseReflection
             ->getMethod('getParsedData');
