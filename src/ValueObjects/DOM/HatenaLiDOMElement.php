@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Toarupg0318\HatenaBlogClient\ValueObjects\DOM;
 
-/**
- * todo: implements FootNoteAttachable
- */
-final class HatenaLiDOMElement extends HatenaDOMElement
+use Toarupg0318\HatenaBlogClient\Exceptions\HatenaInvalidArgumentException;
+use Toarupg0318\HatenaBlogClient\ValueObjects\FootNote;
+
+final class HatenaLiDOMElement extends HatenaDOMElement implements FootNoteAttachable
 {
     public const SYNTAX_MINUS = '-';
     public const SYNTAX_PLUS = '+';
+
+    /** @var self::SYNTAX_* */
+    private string $tag;
 
     /**
      * @param array{
@@ -18,16 +21,33 @@ final class HatenaLiDOMElement extends HatenaDOMElement
      *     lines: string[]
      * } $table
      * @param self::SYNTAX_* $tag
+     * @param FootNote[] $footNotes
+     *
+     * @throws HatenaInvalidArgumentException
      */
     public function __construct(
         private readonly array $table,
-        private readonly string $tag = '-'
+        string $tag = '-',
+        private readonly array $footNotes = []
     ) {
+        if (in_array($tag, [self::SYNTAX_MINUS, self::SYNTAX_PLUS], true)) {
+            $this->tag = $tag;
+        } else {
+            $this->tag = '-';
+        }
+
+        foreach ($footNotes as $footNote) {
+            if (! $footNote instanceof FootNote) {
+                throw new HatenaInvalidArgumentException();
+            }
+        }
     }
 
     /**
      * @param string $additionalLineValue
      * @return self
+     *
+     * @throws HatenaInvalidArgumentException
      */
     public function append(string $additionalLineValue): self
     {
@@ -51,6 +71,66 @@ final class HatenaLiDOMElement extends HatenaDOMElement
         $return = $this->tag . $this->table['header'] . PHP_EOL;
         foreach ($this->table['lines'] as $lineValue) {
             $return .= $this->tag . $this->tag . $lineValue . PHP_EOL;
+        }
+        return $return;
+    }
+
+    /**
+     * @param FootNote $footNote
+     * @return FootNoteAttachable
+     *
+     * @throws HatenaInvalidArgumentException
+     */
+    public function attachFootNote(FootNote $footNote): FootNoteAttachable
+    {
+        return new self(
+            table: [
+                'header' => $this->table['header'],
+                'lines' => $this->table['lines']
+            ],
+            tag: $this->tag,
+            footNotes: [
+                ...$this->footNotes,
+                $footNote
+            ]
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function __toStringWithFootNote(): string
+    {
+        $patterns = array_map(
+            fn (FootNote $footNote) => '/' . $footNote->vocabulary . '/u',
+            $this->footNotes
+        );
+        $replacements = array_map(
+            fn (FootNote $footNote) => $footNote->vocabulary . "(( {$footNote->description} ))",
+            $this->footNotes
+        );
+
+        $tempHeader = preg_replace(
+            pattern: $patterns,
+            replacement: $replacements,
+            subject: $this->table['header'] ?? '',
+            limit: 1
+        );
+        $tempLines = array_map(
+            callback: function (string $value) use ($patterns, $replacements) {
+                return preg_replace(
+                    pattern: $patterns,
+                    replacement: $replacements,
+                    subject: $value,
+                    limit: 1
+                );
+            },
+            array: $this->table['lines']
+        );
+
+        $return = $this->tag . $tempHeader . PHP_EOL;
+        foreach ($tempLines as $tempLineValue) {
+            $return .= $this->tag . $this->tag . $tempLineValue . PHP_EOL;
         }
         return $return;
     }
