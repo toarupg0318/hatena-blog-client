@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
+use Toarupg0318\HatenaBlogClient\Concerns\ExtractPageValueFromLinkTrait;
 use Toarupg0318\HatenaBlogClient\Concerns\GetBasicAuthHeaderTrait;
 use Toarupg0318\HatenaBlogClient\Concerns\GetWSSEAuthHeaderTrait;
 use Toarupg0318\HatenaBlogClient\Contracts\HatenaClientDumper;
@@ -30,6 +31,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
 {
     use GetBasicAuthHeaderTrait;
     use GetWSSEAuthHeaderTrait;
+    use ExtractPageValueFromLinkTrait;
 
     private Client|null $client;
 
@@ -98,6 +100,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
      *
      * @throws HatenaHttpException
      * @throws HatenaUnexpectedException
+     * @throws HatenaInvalidArgumentException
      *
      * @example
      *  $client->getList('https://blog.hatena.ne.jp/hoge0318/fuga0318.hatenablog.com/atom/entry?page=1780929531');
@@ -121,10 +124,18 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
         try {
             $response = $this->client
                 ->get(
-                    uri: "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaBlogId}/atom/entry",
+                    uri: ($page === null)
+                        ? "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaBlogId}/atom/entry"
+                        : "https://blog.hatena.ne.jp/{$this->hatenaId}/{$this->hatenaBlogId}/atom/entry?page={$this->extractPageValueFromLink($page)}",
                     options: $header
                 );
             return new HatenaGetListResponse($response);
+        } catch (HatenaInvalidArgumentException $hatenaInvalidArgumentException) {
+            throw new HatenaInvalidArgumentException(
+                message: 'Passed page value is invalid.',
+                code: $hatenaInvalidArgumentException->getCode(),
+                previous: $hatenaInvalidArgumentException
+            );
         } catch (GuzzleException $guzzleException) {
             throw new HatenaHttpException(
                 code: $guzzleException->getCode(),
