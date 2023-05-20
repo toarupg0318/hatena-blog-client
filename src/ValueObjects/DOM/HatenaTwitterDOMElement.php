@@ -12,8 +12,6 @@ final class HatenaTwitterDOMElement extends HatenaDOMElement
      * "status" means something like tweet id in Twitter.
      * For example, The status of "https://twitter.com/toarupg0318/status/1640997727260794882"
      * is "1640997727260794882"
-     *
-     * @param string $status
      */
     public function __construct(
         public readonly string $status
@@ -29,8 +27,6 @@ final class HatenaTwitterDOMElement extends HatenaDOMElement
     }
 
     /**
-     * @param string $httpsValue
-     * @return self
      * @throws HatenaUnexpectedException
      */
     public static function createFromHttpsValue(string $httpsValue): self

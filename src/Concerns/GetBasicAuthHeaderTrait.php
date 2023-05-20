@@ -7,8 +7,6 @@ namespace Toarupg0318\HatenaBlogClient\Concerns;
 trait GetBasicAuthHeaderTrait
 {
     /**
-     * @param string $hatenaId
-     * @param string $apiKey
      * @return array{headers: array<string, string>}
      */
     private function getBasicAuthHeader(string $hatenaId, string $apiKey): array

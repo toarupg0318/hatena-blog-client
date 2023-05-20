@@ -13,7 +13,7 @@ final class HatenaLiDOMElement extends HatenaDOMElement implements FootNoteAttac
     public const SYNTAX_PLUS = '+';
 
     /** @var self::SYNTAX_* */
-    private string $tag;
+    private readonly string $tag;
 
     /**
      * @param array{
@@ -30,11 +30,7 @@ final class HatenaLiDOMElement extends HatenaDOMElement implements FootNoteAttac
         string $tag = '-',
         private readonly array $footNotes = []
     ) {
-        if (in_array($tag, [self::SYNTAX_MINUS, self::SYNTAX_PLUS], true)) {
-            $this->tag = $tag;
-        } else {
-            $this->tag = '-';
-        }
+        $this->tag = in_array($tag, [self::SYNTAX_MINUS, self::SYNTAX_PLUS], true) ? $tag : '-';
 
         foreach ($footNotes as $footNote) {
             if (! $footNote instanceof FootNote) {
@@ -44,8 +40,6 @@ final class HatenaLiDOMElement extends HatenaDOMElement implements FootNoteAttac
     }
 
     /**
-     * @param string $additionalLineValue
-     * @return self
      *
      * @throws HatenaInvalidArgumentException
      */
@@ -102,11 +96,11 @@ final class HatenaLiDOMElement extends HatenaDOMElement implements FootNoteAttac
     public function __toStringWithFootNote(): string
     {
         $patterns = array_map(
-            fn (FootNote $footNote) => '/' . $footNote->vocabulary . '/u',
+            fn (FootNote $footNote): string => '/' . $footNote->vocabulary . '/u',
             $this->footNotes
         );
         $replacements = array_map(
-            fn (FootNote $footNote) => $footNote->vocabulary . "(( {$footNote->description} ))",
+            fn (FootNote $footNote): string => $footNote->vocabulary . "(( {$footNote->description} ))",
             $this->footNotes
         );
 
@@ -117,14 +111,12 @@ final class HatenaLiDOMElement extends HatenaDOMElement implements FootNoteAttac
             limit: 1
         );
         $tempLines = array_map(
-            callback: function (string $value) use ($patterns, $replacements) {
-                return preg_replace(
-                    pattern: $patterns,
-                    replacement: $replacements,
-                    subject: $value,
-                    limit: 1
-                );
-            },
+            callback: fn(string $value): ?string => preg_replace(
+                pattern: $patterns,
+                replacement: $replacements,
+                subject: $value,
+                limit: 1
+            ),
             array: $this->table['lines']
         );
 

@@ -9,7 +9,6 @@ final class HatenaHTTPDOMElement extends HatenaDOMElement
     public const OPTIONAL_TAGS = ['title', 'barcode', 'image'];
 
     /**
-     * @param string $httpUri
      * @param value-of<self::OPTIONAL_TAGS>|null $optionalTag  'title' or 'barcode' or 'image'
      */
     public function __construct(

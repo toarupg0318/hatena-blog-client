@@ -13,7 +13,6 @@ trait ExtractPageValueFromLinkTrait
 {
     /**
      * @param string $linkUrl
-     * @return string
      *
      * @throws HatenaInvalidArgumentException
      * @example
@@ -31,7 +30,7 @@ trait ExtractPageValueFromLinkTrait
             return $matches[5];
         }
 
-        if (count($matches) === 0) {
+        if ($matches === []) {
             return $linkUrl;
         }
 

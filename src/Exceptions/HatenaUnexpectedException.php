@@ -8,7 +8,7 @@ use Throwable;
 
 final class HatenaUnexpectedException extends HatenaException
 {
-    const MESSAGE = 'Something unexpected has occurred in Hatena api process.';
+    public const MESSAGE = 'Something unexpected has occurred in Hatena api process.';
 
     public function __construct(
         string $message = self::MESSAGE,

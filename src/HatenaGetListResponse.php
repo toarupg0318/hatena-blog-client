@@ -146,7 +146,7 @@ final class HatenaGetListResponse extends Response implements ResponseInterface,
             return [];
         }
 
-        return array_map(function (array $entry) {
+        return array_map(function (array $entry): array {
             $return = [];
 
             // extract entry id

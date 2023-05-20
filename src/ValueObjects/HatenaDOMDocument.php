@@ -52,18 +52,13 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
         }
     }
 
-    /**
-     * @return self
-     */
     public static function create(): self
     {
         return new self();
     }
 
     /**
-     * @param HatenaDOMElement $hatenaDOMElement
      * @return self<HatenaDOMElement>
-     *
      * @throws HatenaUnexpectedException
      */
     private function append(HatenaDOMElement $hatenaDOMElement): self {
@@ -75,8 +70,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $h3Value
-     * @return self
      *
      * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
      */
@@ -86,8 +79,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $h4Value
-     * @return self
      *
      * @throws HatenaInvalidArgumentException|HatenaUnexpectedException
      */
@@ -97,8 +88,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $h5Value
-     * @return self
      *
      * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
      */
@@ -108,9 +97,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $value
      * @param string|null $url
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -122,8 +109,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @return self
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendBr(): self
@@ -132,9 +117,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $url
      * @param value-of<HatenaHTTPDOMElement::OPTIONAL_TAGS>|null $optionTag
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -144,9 +127,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $hatenaId
      * @param value-of<HatenaIdDOMElement::OPTIONAL_TAGS>|null $optionalTag
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -170,8 +151,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $value
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -181,8 +160,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $value
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -193,8 +170,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
 
     /**
      * @param value-of<HatenaSyntaxHighLightDOMElement::LANGUAGES_TO_HANDLE> $language
-     * @param string $script
-     * @return self
      *
      * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
      */
@@ -204,8 +179,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $texScript
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -215,8 +188,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $text
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -226,8 +197,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $status
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -245,8 +214,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $value
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -269,8 +236,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @return self
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendTableOfContents(): self
@@ -279,9 +244,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $title
-     * @param string $description
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
@@ -307,11 +269,9 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     {
         return implode(
             separator: PHP_EOL,
-            array: array_map(function (HatenaDOMElement $hatenaDOMElement) {
-                return ($hatenaDOMElement instanceof FootNoteAttachable)
-                    ? $hatenaDOMElement->__toStringWithFootNote()
-                    : $hatenaDOMElement->__toString();
-            }, $this->hatenaDOMElementList)
+            array: array_map(fn(HatenaDOMElement $hatenaDOMElement): string => ($hatenaDOMElement instanceof FootNoteAttachable)
+                ? $hatenaDOMElement->__toStringWithFootNote()
+                : $hatenaDOMElement->__toString(), $this->hatenaDOMElementList)
         );
     }
 

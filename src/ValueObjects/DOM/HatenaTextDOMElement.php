@@ -10,7 +10,6 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\FootNote;
 final class HatenaTextDOMElement extends HatenaDOMElement implements FootNoteAttachable
 {
     /**
-     * @param string $text
      * @param FootNote[] $footNotes
      */
     public function __construct(

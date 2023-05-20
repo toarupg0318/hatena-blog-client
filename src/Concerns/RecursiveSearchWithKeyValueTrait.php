@@ -18,7 +18,6 @@ trait RecursiveSearchWithKeyValueTrait
      * @param string $searchKey
      * @param string $searchValue
      * @param string $siblingKey
-     * @return string|null
      *
      * @example
      * ```

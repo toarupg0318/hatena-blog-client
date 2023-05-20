@@ -8,7 +8,7 @@ use Throwable;
 
 final class HatenaInvalidArgumentException extends HatenaException
 {
-    const MESSAGE = 'Passed argument is invalid.';
+    public const MESSAGE = 'Passed argument is invalid.';
 
     public function __construct(
         string $message = self::MESSAGE,

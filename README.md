@@ -241,8 +241,18 @@ HATENA_API_KEY=foo78bar90
 <br />
 
 ### 静的解析
+#### PHPStan
 以下コマンドで [PHPStan](https://phpstan.org/) による静的解析を実行できます。
 
 ```bash
 ./vendor/bin/phpstan analyse
+```
+
+#### Rector
+以下コマンドで [Rector](https://github.com/rectorphp/rector/) による静的解析を実行できます。
+```bash
+./vendor/bin/rector process src
+
+# dry run
+# ./vendor/bin/rector process src --dry-run
 ```

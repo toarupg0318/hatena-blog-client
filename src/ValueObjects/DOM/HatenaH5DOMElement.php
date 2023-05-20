@@ -11,9 +11,7 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\FootNote;
 final class HatenaH5DOMElement extends HatenaDOMElement implements FootNoteAttachable
 {
     /**
-     * @param string $h5Value
      * @param FootNote[] $footNotes
-     *
      * @throws HatenaInvalidArgumentException
      */
     public function __construct(
@@ -53,11 +51,11 @@ final class HatenaH5DOMElement extends HatenaDOMElement implements FootNoteAttac
     public function __toStringWithFootNote(): string
     {
         $patterns = array_map(
-            fn (FootNote $footNote) => '/' . $footNote->vocabulary . '/u',
+            fn (FootNote $footNote): string => '/' . $footNote->vocabulary . '/u',
             $this->footNotes
         );
         $replacements = array_map(
-            fn (FootNote $footNote) => $footNote->vocabulary . "(( {$footNote->description} ))",
+            fn (FootNote $footNote): string => $footNote->vocabulary . "(( {$footNote->description} ))",
             $this->footNotes
         );
         $temp = preg_replace(

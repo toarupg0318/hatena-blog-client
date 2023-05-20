@@ -33,14 +33,11 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     use GetWSSEAuthHeaderTrait;
     use ExtractPageValueFromLinkTrait;
 
-    private Client|null $client;
+    private Client|null $client = null;
 
     private static int|null $memoizedValue = null;
 
     /**
-     * @param string $hatenaId
-     * @param string $hatenaBlogId
-     * @param string $apiKey
      * @param 'basic'|'wsse' $auth
      */
     private function __construct(
@@ -55,11 +52,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     }
 
     /**
-     * @param string $hatenaId
-     * @param string $hatenaBlogId
-     * @param string $apiKey
      * @param 'basic'|'wsse' $auth
-     * @return self
      *
      * @throws Exception
      */
@@ -82,10 +75,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
             return $hatenaClient;
         }
 
-        $encodedValue = json_encode([$hatenaId, $hatenaBlogId, $apiKey, $auth]);
-        if ($encodedValue === false) {
-            throw new HatenaUnexpectedException();
-        }
+        $encodedValue = json_encode([$hatenaId, $hatenaBlogId, $apiKey, $auth], JSON_THROW_ON_ERROR);
 
         $checkSum = crc32($encodedValue);
         if ($checkSum !== self::$memoizedValue) {
@@ -216,9 +206,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
         $categoriesImXml = implode(
             separator: '',
             array: array_map(
-                callback: function (string $categoryValue) {
-                    return "<category term=\"{$categoryValue}\" />";
-                },
+                callback: fn(string $categoryValue) => "<category term=\"{$categoryValue}\" />",
                 array: $categories
             )
         );
@@ -248,12 +236,7 @@ XML;
             'wsse' => self::getWSSEAuthHeader($this->hatenaId, $this->apiKey),
         };
 
-        $postData = array_merge(
-            $header,
-            [
-                'body' => $bodyToPost,
-            ]
-        );
+        $postData = [...$header, 'body' => $bodyToPost];
 
         try {
             $response = $this->client->post(
@@ -308,9 +291,7 @@ XML;
         $categoriesImXml = implode(
             separator: '',
             array: array_map(
-                callback: function (string $categoryValue) {
-                    return "<category term=\"{$categoryValue}\" />";
-                },
+                callback: fn(string $categoryValue) => "<category term=\"{$categoryValue}\" />",
                 array: $categories
             )
         );
@@ -340,12 +321,7 @@ XML;
             'wsse' => self::getWSSEAuthHeader($this->hatenaId, $this->apiKey),
         };
 
-        $postData = array_merge(
-            $header,
-            [
-                'body' => $bodyToPost,
-            ]
-        );
+        $postData = [...$header, 'body' => $bodyToPost];
 
         try {
             $response = $this->client->put(
@@ -404,11 +380,6 @@ XML;
     /**
      * @internal
      *
-     * @param string $hatenaId
-     * @param string $hatenaBlogId
-     * @param string $apiKey
-     * @param string $auth
-     * @return int
      *
      * @throws HatenaUnexpectedException
      */
@@ -418,7 +389,7 @@ XML;
         string $apiKey,
         string $auth
     ): int {
-        $encodedValue = json_encode([$hatenaId, $hatenaBlogId, $apiKey, $auth]);
+        $encodedValue = json_encode([$hatenaId, $hatenaBlogId, $apiKey, $auth], JSON_THROW_ON_ERROR);
         if (! is_string($encodedValue)) {
             throw new HatenaUnexpectedException();
         }
@@ -426,9 +397,6 @@ XML;
         return crc32($encodedValue);
     }
 
-    /**
-     * @return HatenaClientInterface
-     */
     public function dump(): HatenaClientInterface
     {
         dump($this);
