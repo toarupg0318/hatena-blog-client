@@ -46,11 +46,7 @@ final class HatenaDeletePostByEntryIdResponse extends Response implements Respon
         if ($this->parsedData === null) {
             $contents = $this->stream->getContents();
             // only delete endpoint responses an empty body
-            if (! empty($contents)) {
-                $parsedData = $this->getParsedDataFromResponseContent($contents);
-            } else {
-                $parsedData = [];
-            }
+            $parsedData = empty($contents) ? [] : $this->getParsedDataFromResponseContent($contents);
             $this->parsedData = $parsedData;
         }
 

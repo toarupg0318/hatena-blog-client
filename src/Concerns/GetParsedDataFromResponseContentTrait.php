@@ -14,9 +14,7 @@ trait GetParsedDataFromResponseContentTrait
     /**
      * Convert XML to array.
      *
-     * @param string $content
      * @return array<string, mixed>
-     *
      * @throws HatenaUnexpectedException
      */
     private function getParsedDataFromResponseContent(string $content): array

@@ -7,8 +7,6 @@ namespace Toarupg0318\HatenaBlogClient\Concerns;
 trait GetWSSEAuthHeaderTrait
 {
     /**
-     * @param string $hatenaId
-     * @param string $apiKey
      * @return array{
      *     headers: array<string, string>
      * }
@@ -21,7 +19,7 @@ trait GetWSSEAuthHeaderTrait
             algo: 'sha1',
             data: hash(
                 algo: 'sha1',
-                data: strval(time()) . uniqid(strval(mt_rand()), true) . rand() . intval(getmypid())
+                data: (string) time() . uniqid((string) random_int(0, mt_getrandmax()), true) . random_int(0, mt_getrandmax()) . (int) getmypid()
             )
         );
         $now = date('Y-m-d\TH:i:s\Z');

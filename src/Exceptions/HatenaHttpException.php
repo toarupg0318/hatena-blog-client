@@ -9,7 +9,7 @@ use Throwable;
 
 final class HatenaHttpException extends Exception
 {
-    const MESSAGE = 'Http connection to Hatena has failed.';
+    public const MESSAGE = 'Http connection to Hatena has failed.';
 
     public function __construct(
         string $message = self::MESSAGE,

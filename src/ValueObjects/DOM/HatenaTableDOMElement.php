@@ -34,9 +34,7 @@ final class HatenaTableDOMElement extends HatenaDOMElement
     {
         $headerPart = implode(
                 '',
-                array_map(function (string|null $headerItem) {
-                    return '|*' . $headerItem;
-                }, $this->table['headers'])
+                array_map(fn(string|null $headerItem): string => '|*' . $headerItem, $this->table['headers'])
             ) . '|';
 
         /** @var string[] $lineParts */
@@ -44,9 +42,7 @@ final class HatenaTableDOMElement extends HatenaDOMElement
         foreach ($this->table['lines'] as $line) {
             $lineParts[] = implode(
                 '',
-                    array_map(function (string|null $lineItem) {
-                        return '|' . $lineItem;
-                    }, $line)
+                    array_map(fn(string|null $lineItem): string => '|' . $lineItem, $line)
                 ) . '|';
         }
 

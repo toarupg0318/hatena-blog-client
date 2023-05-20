@@ -74,7 +74,6 @@ final class HatenaSyntaxHighLightDOMElement extends HatenaDOMElement implements 
 
     /**
      * @param value-of<self::LANGUAGES_TO_HANDLE> $language
-     * @param string|null $script
      *
      * @throws HatenaInvalidArgumentException
      */
