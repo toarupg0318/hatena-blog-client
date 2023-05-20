@@ -109,7 +109,12 @@ TYPESCRIPT
         ->appendText('テキストtest')
         ->appendTwitter('1657370105372889088');
     $editResponse = $hatenaClient
-        ->edit($registeredEntryId, $contentToEdit)
+        ->edit(
+            entryId: $registeredEntryId,
+            content: $contentToEdit,
+            draft: false,
+            customUrl: 'im toarupg'
+        )
         ->getParsedData();
     expect($editResponse)
         ->toHaveKeys([
