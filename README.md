@@ -147,6 +147,7 @@ $getListResponse->getParsedData();
 //    ->getBody()
 //    ->getContents();
 ```
+
 <br />
 
 最新10件以降の古い投稿は後述する"次のページURL"を引数に指定して実行することで取得できます。
@@ -155,6 +156,7 @@ $hatenaClient
     ->getList('https://blog.hatena.ne.jp/foo765/foo765.hatenablog.com/atom/entry?page=1695039555');
     ->getParsedData();
 ```
+
 <br />
 
 "次のページURL"は以下のように取得できます。
@@ -163,6 +165,8 @@ $getListResponse = $hatenaClient->getList();
 $getListResponse->getNextPageUrl();
 // 'https://blog.hatena.ne.jp/foo765/foo765.hatenablog.com/atom/entry?page=1695039555'
 ```
+
+<br />
 
 ### 記事取得
 ```PHP
@@ -177,7 +181,25 @@ $getEntryResponse = $hatenaClient->getPostByEntryId($latestEntryId);
 <br />
 
 ### 記事編集
+```PHP
+$hatenaSyntaxContent
+    = HatenaDOMDocument::create()
+        ->appendTableOfContents()
+        ->appendH3('見出し h3')
+        ->appendH4('見出し h4');
+$editResponse = $hatenaClient
+    ->edit(
+        entryId: '4207575167685628272',
+        content: $contentToEdit,
+        draft: false,
+        customUrl: 'happy new year 2023'
+    )
+    ->getParsedData();
+```
 
+※ 既存の公開記事を下書きに変更することはできません。
+
+<br />
 
 ### 記事削除
 取得したエントリIDを引数に指定して記事を削除することができます。
@@ -189,13 +211,15 @@ $hatenaClient->deletePostByEntryId('4207575167685628272');
 
 ## 開発者向け
 
-
 ### 開発への参加
 開発の方針がまだ定まっていないですが、プルリクエストは適宜受け付けています。
 
+<br />
 
 ### テストの実行
 プロジェクトのルートディレクトリの .env.example をコピーして .env を作成します。
+
+<br />
 
 ```bash
 cp .env.example .env
@@ -213,6 +237,8 @@ HATENA_API_KEY=foo78bar90
 ```bash
 ./vendor/bin/pest
 ```
+
+<br />
 
 ### 静的解析
 以下コマンドで [PHPStan](https://phpstan.org/) による静的解析を実行できます。
