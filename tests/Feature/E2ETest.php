@@ -23,7 +23,6 @@ it('ensures straight through test connects to Hatena with using actual account',
         ->post(
             $content,
             $title,
-            'text/plain',
             true,
             null,
             null,

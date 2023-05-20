@@ -188,7 +188,6 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     /**
      * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
      * @param string|null $title
-     * @param HatenaClientInterface::CONTENT_TYPE_* $contentType
      * @param bool $draft
      * @param string|null $updated
      * @param string|null $customUrl
@@ -201,7 +200,6 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
     public function post(
         string|HatenaDOMDocument $content,
         string|null $title = null,
-        string $contentType = 'text/plain',
         bool $draft = true,
         string|null $updated = null,
         string|null $customUrl = null,
@@ -231,7 +229,7 @@ class HatenaClient implements HatenaClientInterface, HatenaClientDumper
        xmlns:app="http://www.w3.org/2007/app">
   <title>{$title}</title>
   <author><name>name</name></author>
-  <content type="$contentType">
+  <content type="text/plain">
 $contentInXML
   </content>
   <updated>{$updated}</updated>
@@ -276,7 +274,6 @@ XML;
      * @param string $entryId
      * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
      * @param string|null $title if empty, constant "■" is embedded.
-     * @param self::CONTENT_TYPE_* $contentType
      * @param bool $draft
      * @param string|null $updated
      * @param string|null $customUrl
@@ -291,7 +288,6 @@ XML;
         string $entryId,
         HatenaDOMDocument|string $content,
         ?string $title = null,
-        string $contentType = 'text/plain',
         bool $draft = true,
         ?string $updated = null,
         ?string $customUrl = null,
@@ -325,7 +321,7 @@ XML;
        xmlns:app="http://www.w3.org/2007/app">
   <title>{$title}</title>
   <author><name>name</name></author>
-  <content type="$contentType">
+  <content type="text/plain">
 $contentInXML
   </content>
   <updated>{$updated}</updated>

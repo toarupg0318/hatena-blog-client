@@ -15,10 +15,6 @@ use Toarupg0318\HatenaBlogClient\ValueObjects\HatenaDOMDocument;
 
 interface HatenaClientInterface
 {
-    public const CONTENT_TYPE_TEXT_PLAIN = 'text/plain';
-    public const CONTENT_TYPE_TEXT_HTML = 'text/html';
-    public const CONTENT_TYPE_HATENA_SYNTAX = 'text/x-hatena-syntax';
-
     /**
      * Fetch blog entries.
      *
@@ -60,7 +56,6 @@ interface HatenaClientInterface
      *
      * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
      * @param string|null $title    if empty, constant "■" is embedded.
-     * @param self::CONTENT_TYPE_* $contentType
      * @param bool $draft
      * @param string|null $updated
      * @param string|null $customUrl
@@ -70,7 +65,6 @@ interface HatenaClientInterface
     public function post(
         string|HatenaDOMDocument $content,
         string|null $title = null,
-        string $contentType = 'text/plain',
         bool $draft = true,
         string|null $updated = null,
         string|null $customUrl = null,
@@ -85,7 +79,6 @@ interface HatenaClientInterface
      * @param string $entryId
      * @param string|HatenaDOMDocument<int, HatenaDOMElement> $content
      * @param string|null $title    if empty, constant "■" is embedded.
-     * @param self::CONTENT_TYPE_* $contentType
      * @param bool $draft
      * @param string|null $updated
      * @param string|null $customUrl
@@ -96,7 +89,6 @@ interface HatenaClientInterface
         string $entryId,
         string|HatenaDOMDocument $content,
         string|null $title = null,
-        string $contentType = 'text/plain',
         bool $draft = true,
         string|null $updated = null,
         string|null $customUrl = null,
