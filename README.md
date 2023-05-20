@@ -131,7 +131,7 @@ $response = $hatenaClient
 投稿編集画面では以下のようになります。
 <img src="https://github.com/toarupg0318/hatena-blog-client/raw/master/art/hatena_syntax_post.png" width="600">
 
-その他のはてな記法の機能についてはこちらを参照ください。
+その他のはてな記法の機能については[こちら](docs/POST.md)を参照ください。
 
 ### 記事一覧取得
 最新10件を取得できます。
