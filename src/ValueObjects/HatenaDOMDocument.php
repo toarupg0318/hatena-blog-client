@@ -70,9 +70,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $h3Value
      * @param array<int<0,max>|string, mixed> $footNotes
-     * @return self
      *
      * @throws HatenaInvalidArgumentException
      * @throws HatenaUnexpectedException
@@ -92,9 +90,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $h4Value
      * @param array<int<0,max>|string, mixed> $footNotes
-     * @return self
      *
      * @throws HatenaInvalidArgumentException
      * @throws HatenaUnexpectedException
@@ -114,9 +110,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $h5Value
      * @param array<int<0,max>|string, mixed> $footNotes
-     * @return self
      *
      * @throws HatenaInvalidArgumentException
      * @throws HatenaUnexpectedException
@@ -224,9 +218,7 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     * @param string $text
      * @param array<int<0,max>|string, mixed> $footNotes
-     * @return self
      *
      * @throws HatenaUnexpectedException
      */
