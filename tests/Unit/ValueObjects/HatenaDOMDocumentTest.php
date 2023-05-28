@@ -97,3 +97,46 @@ HATENA
         );
 
 });
+
+it('tests foot-note can be attached.', function () {
+    $hatenaDOMDocumentWithFootNote = HatenaDOMDocument::create()
+        ->appendH3(
+            'h3 test 脚注1',
+            [
+                '脚注1' => '脚注1 description',
+            ]
+        )
+        ->appendH4(
+            'h4 test 脚注4',
+            [
+                '脚注4_1' => '脚注4_1 description',
+                '脚注4_2' => '脚注4_2 description',
+            ]
+        )
+        ->appendH5(
+            'h5 test 脚注5',
+            [
+                '脚注5_1' => '脚注5_1 description',
+                '脚注5_2' => '脚注5_2 description',
+                '脚注5_3' => '脚注5_3 description',
+            ]
+        )
+        ->appendText(
+            'h4 test 脚注2',
+            [
+                '脚注2' => '脚注2 description'
+            ]
+        );
+    expect($hatenaDOMDocumentWithFootNote->__toString())
+        ->toBe(<<<HATENA
+*h3 test 脚注1(( 脚注1 description ))
+
+**h4 test 脚注4
+
+***h5 test 脚注5
+
+h4 test 脚注2(( 脚注2 description ))
+
+HATENA
+);
+});

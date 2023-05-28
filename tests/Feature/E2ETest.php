@@ -66,7 +66,8 @@ it('ensures straight through test connects to Hatena with using actual account',
     sleep(1);
 
     // get the registered-entry, confirm registered-entry is fetched correctly.
-    $hatenaClient->getPostByEntryId($registeredEntryId);
+    $hatenaClient->getPostByEntryId($registeredEntryId)
+        ->getParsedData();
     sleep(1);
 
     // get list, confirm registered-entry is contained.

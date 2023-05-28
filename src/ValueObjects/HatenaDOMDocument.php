@@ -70,30 +70,69 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
+     * @param string $h3Value
+     * @param array<int<0,max>|string, mixed> $footNotes
+     * @return self
      *
-     * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
+     * @throws HatenaInvalidArgumentException
+     * @throws HatenaUnexpectedException
      */
-    public function appendH3(string $h3Value): self
+    public function appendH3(string $h3Value, array $footNotes = []): self
     {
-        return $this->append(new HatenaH3DOMElement($h3Value));
+        $instantiatedFootNotes = [];
+        foreach ($footNotes as $vocabulary => $description) {
+            if (! is_string($vocabulary) || ! is_string($description)
+            ) {
+                continue;
+            }
+            $instantiatedFootNotes[] = new FootNote($vocabulary, $description);
+        }
+
+        return $this->append(new HatenaH3DOMElement($h3Value, $instantiatedFootNotes));
     }
 
     /**
+     * @param string $h4Value
+     * @param array<int<0,max>|string, mixed> $footNotes
+     * @return self
      *
-     * @throws HatenaInvalidArgumentException|HatenaUnexpectedException
+     * @throws HatenaInvalidArgumentException
+     * @throws HatenaUnexpectedException
      */
-    public function appendH4(string $h4Value): self
+    public function appendH4(string $h4Value, array $footNotes = []): self
     {
-        return $this->append(new HatenaH4DOMElement($h4Value));
+        $instantiatedFootNotes = [];
+        foreach ($footNotes as $vocabulary => $description) {
+            if (! is_string($vocabulary) || ! is_string($description)
+            ) {
+                continue;
+            }
+            $instantiatedFootNotes[] = new FootNote($vocabulary, $description);
+        }
+
+        return $this->append(new HatenaH4DOMElement($h4Value, $instantiatedFootNotes));
     }
 
     /**
+     * @param string $h5Value
+     * @param array<int<0,max>|string, mixed> $footNotes
+     * @return self
      *
-     * @throws HatenaUnexpectedException|HatenaInvalidArgumentException
+     * @throws HatenaInvalidArgumentException
+     * @throws HatenaUnexpectedException
      */
-    public function appendH5(string $h5Value): self
+    public function appendH5(string $h5Value, array $footNotes = []): self
     {
-        return $this->append(new HatenaH5DOMElement($h5Value));
+        $instantiatedFootNotes = [];
+        foreach ($footNotes as $vocabulary => $description) {
+            if (! is_string($vocabulary) || ! is_string($description)
+            ) {
+                continue;
+            }
+            $instantiatedFootNotes[] = new FootNote($vocabulary, $description);
+        }
+
+        return $this->append(new HatenaH5DOMElement($h5Value, $instantiatedFootNotes));
     }
 
     /**
@@ -151,7 +190,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendPre(string $value): self
@@ -160,7 +198,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendSuperPre(string $value): self
@@ -179,7 +216,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendTex(string $texScript): self
@@ -188,16 +224,31 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
+     * @param string $text
+     * @param array<int<0,max>|string, mixed> $footNotes
+     * @return self
      *
      * @throws HatenaUnexpectedException
      */
-    public function appendText(string $text): self
+    public function appendText(string $text, array $footNotes = []): self
     {
-        return $this->append(new HatenaTextDOMElement($text));
+        $instantiatedFootNotes = [];
+        foreach ($footNotes as $vocabulary => $description) {
+            if (! is_string($vocabulary) || ! is_string($description)
+            ) {
+                continue;
+            }
+            $instantiatedFootNotes[] = new FootNote($vocabulary, $description);
+        }
+
+        return $this
+            ->append(hatenaDOMElement: new HatenaTextDOMElement(
+                text: $text,
+                footNotes: $instantiatedFootNotes
+            ));
     }
 
     /**
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendTwitter(string $status): self
@@ -214,7 +265,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendStopP(string $value): self
@@ -244,7 +294,6 @@ final class HatenaDOMDocument implements IteratorAggregate, Stringable, Countabl
     }
 
     /**
-     *
      * @throws HatenaUnexpectedException
      */
     public function appendDt(
