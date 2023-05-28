@@ -39,6 +39,34 @@ $hatenaClient->post(
 
 <img src="https://github.com/toarupg0318/hatena-blog-client/raw/master/art/hatena_syntaxes/h5.png" width="600">
 
+### 脚注記法
+特定の記法において、追加の引数を指定することによって脚注を追加することができます。
+
+```PHP
+$hatenaDOMDocument = HatenaDOMDocument::create()
+    ->appendH3('概要')
+    ->appendText(
+        text: 'このパッケージははてなブログのPHPクライアントパッケージです。',
+        footNotes: [
+            'はてなブログ' => 'はてなブログは、あなたの思いや考えを残したり、さまざまな人が綴った多様な価値観に触れたりできる場所です。'
+        ]
+    );
+$hatenaClient->post(
+    $hatenaDOMDocument
+);
+```
+
+<img src="https://github.com/toarupg0318/hatena-blog-client/raw/master/art/hatena_syntaxes/foot_note.png" width="600">
+
+脚注を追加できるのは、以下のメソッドです。
+
+| クラス               | メソッド       |
+|-------------------|------------|
+| HatenaDOMDocument | appendH3   |
+| HatenaDOMDocument | appendH4   |
+| HatenaDOMDocument | appendH5   |
+| HatenaDOMDocument | appendText |
+
 ### 引用記法
 ```PHP
 $hatenaDOMDocument = HatenaDOMDocument::create()

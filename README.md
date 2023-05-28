@@ -141,9 +141,9 @@ $getListResponse = $hatenaClient->getList();
 // レスポンスを連想配列形式で取得
 $getListResponse->getParsedData();
 
-// また、記事一覧取得以外に限らず、以下のようにレスポンスを取得することもできます
+// また、記事一覧取得に限らず、以下のようにレスポンスを取得することもできます
 // この場合、XML形式の文字列となります
-// $getListResponse->getParsedData()
+// $getListResponse
 //    ->getBody()
 //    ->getContents();
 ```
